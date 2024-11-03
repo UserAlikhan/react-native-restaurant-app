@@ -3,14 +3,17 @@ import Header from "../header/Header"
 import ScrollTabComponent from "../topTabs/ScrollTabComponent"
 
 type Props = {
-    children: React.ReactNode
+    currentPage: number;
+    children: React.ReactNode;
+    handleTabPress: (index: number) => void;
 }
 
-const HeaderWithTopBarTemplate = ({ children }: Props) => {
+const HeaderWithTopBarTemplate = ({ currentPage, children, handleTabPress }: Props) => {
+
     return (
         <View style={styles.container}>
             <Header />
-            <ScrollTabComponent />
+            <ScrollTabComponent currentPage={currentPage} handleTabPress={handleTabPress}/>
             
             <View style={styles.content}>
                 {children}
@@ -28,8 +31,5 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,    
         backgroundColor: '#d8d8d8',
-        // paddingVertical: 12
-        // justifyContent: 'center',
-        // alignItems: 'center',
     }
 })

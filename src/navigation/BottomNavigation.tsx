@@ -18,7 +18,7 @@ const BottomNavigation = () => {
                 name="Home" 
                 component={Home} 
                 options={{
-                    tabBarActiveTintColor: "#7a0ab9",
+                    tabBarActiveTintColor: "red",
                     tabBarLabel: "Home",
                     tabBarIcon: ({ focused, color, size }) => (
                         <HomeIcon color={color} size={focused ? size : size+5}/>
@@ -29,7 +29,7 @@ const BottomNavigation = () => {
                 name="Explore" 
                 component={Explore} 
                 options={{
-                    tabBarActiveTintColor: "#7a0ab9",
+                    tabBarActiveTintColor: "red",
                     tabBarLabel: "Explore",
                     tabBarIcon: ({ focused, color, size }) => (
                         <LocateIcon color={color} size={focused ? size : size+5}/>
@@ -40,7 +40,7 @@ const BottomNavigation = () => {
                 name="Account" 
                 component={Account} 
                 options={{
-                    tabBarActiveTintColor: "#7a0ab9",
+                    tabBarActiveTintColor: "red",
                     tabBarLabel: "Account",
                     tabBarIcon: ({ focused, color, size }) => (
                         <User2Icon color={color} size={focused ? size : size+5}/>

@@ -3,8 +3,13 @@ import TabComponent from "./TabComponent"
 import constants from "../../constants/constants"
 import tabs from "../../data/tabs"
 
-const ScrollTabComponent = () => {
+type Props = {
+    currentPage: number;
+    handleTabPress: (index: number) => void;
+}
 
+const ScrollTabComponent = ({ currentPage, handleTabPress }: Props) => {
+    
     return (
         <View style={ styles.container }>
             <ScrollView
@@ -15,7 +20,7 @@ const ScrollTabComponent = () => {
                 contentContainerStyle={{ paddingHorizontal: 25 }}
             >
                 { tabs.map((tab, index) => (
-                    <TabComponent key={index} name={tab} />
+                    <TabComponent key={index} name={tab} index={index} isActive={index === currentPage} handleTabPress={handleTabPress} />
                 )) }
             </ScrollView>
         </View>

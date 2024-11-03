@@ -3,6 +3,7 @@ import constants from "../../constants/constants";
 import VideoPlayer from "./components/VideoPlayer";
 import LiveText from "./components/LiveText";
 import ChooseTime from "./components/ChooseTime";
+import RecomendationsComponent from "../homePageComponents/RecomendationsComponent";
 
 const Live = () => {
 
@@ -14,6 +15,8 @@ const Live = () => {
             <VideoPlayer />
             {/* Choose time */}
             <ChooseTime />
+            {/* Recommendations */}
+            <RecomendationsComponent title={"In this area"} />
         </View>
     )
 }

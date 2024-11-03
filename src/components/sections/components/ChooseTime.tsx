@@ -22,7 +22,7 @@ export default ChooseTime
 
 const styles = StyleSheet.create({
     container: {
-        height: constants.TIME_PERIOD_IMAGE_HEIGHT,
+        height: 'auto',
         width: '100%',
         marginTop: 10
     }
