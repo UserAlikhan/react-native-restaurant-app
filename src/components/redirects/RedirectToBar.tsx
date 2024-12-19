@@ -12,7 +12,7 @@ type Props = {
 const RedirectToBar = ({ navigation, children, data }: Props) => {
     
     const onPress = () => {
-        navigation.navigation.push("Bar", data)
+        navigation.navigation.push("Bar")
     }
 
     return (

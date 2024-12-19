@@ -4,12 +4,21 @@ import constants from "../../../constants/constants"
 import { useEffect, useRef } from "react"
 import { useRoute } from '@react-navigation/native'
 import { BarScreenRouteProp } from "../../../types/navigation"
+import { useAppSelector } from "@app/store/hooks"
 
 const LiveText = () => {
     const fadeAnim = useRef(new Animated.Value(1)).current;
 
-    const route  = useRoute<BarScreenRouteProp>();
-    
+    const { selectedBar } = useAppSelector(state => state.selectedBar);
+
+    if (!selectedBar) {
+        return (
+            <View>
+                <Text style={styles.noData}>NO DATA</Text>
+            </View>
+        )
+    }
+
     useEffect(() => {
         const fadeInOut = () => {
             Animated.sequence([
@@ -32,7 +41,7 @@ const LiveText = () => {
     return (
         <View style={styles.textContainer}>
             {/* Title */}
-            <Text style={styles.text1}>Track {route.params.name} at the real time</Text>
+            <Text style={styles.text1}>Track {selectedBar.name} at the real time</Text>
             <View style={styles.liveContainer}>
                 {/* Dot Icon */}
                 <View style={styles.dotContainer}>
@@ -89,4 +98,7 @@ const styles = StyleSheet.create({
         color: '#cb4335',
         alignSelf: 'flex-start',
     },
+    noData: {
+        fontSize: 24, color: "#fff"
+    }
 });

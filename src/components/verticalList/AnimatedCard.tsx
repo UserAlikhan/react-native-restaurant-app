@@ -3,7 +3,6 @@ import constants from "../../constants/constants";
 import Info from "../sections/Info"
 import GoToTopButton from "./GoToTopButton";
 import Live from "../sections/Live";
-import { useEffect } from "react";
 
 type AnimatedCardProps = {
     tab: string;
@@ -17,6 +16,7 @@ const AnimatedCard = ({ tab, index }: AnimatedCardProps) => {
             {tab === constants.LAST_TAB_SECTION && (
                 <>
                     <Info />
+                    <GoToTopButton />
                 </>
             )}
             {tab === "Info" && (

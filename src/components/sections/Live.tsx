@@ -14,7 +14,7 @@ const Live = () => {
             {/* Video Container */}
             <VideoPlayer />
             {/* Choose time */}
-            <ChooseTime />
+            {/* <ChooseTime /> */}
             {/* Recommendations */}
             <RecomendationsComponent title={"In this area"} />
         </View>
@@ -27,6 +27,5 @@ const styles = StyleSheet.create({
     contentContainer: {
         flex: 1,
         height: constants.SECTION_HEIGHT,
-        borderWidth: 2  
     },
 })

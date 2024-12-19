@@ -1,4 +1,3 @@
-import { Bar } from "@app/types/types"
 import { BottomSheetModal, useBottomSheetModal } from "@gorhom/bottom-sheet"
 import { CircleX, Star } from "lucide-react-native"
 import { forwardRef, useMemo, useState } from "react"
@@ -8,10 +7,11 @@ import RedirectToBarComponent from "./RedirectToBarComponent"
 import HorizontalImageScroll from "../horizontallImageScroll/HorizontalImageScroll"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MainStackParamList } from "@app/types/navigation"
+import { useAppSelector } from "@app/store/hooks"
 
 export type Ref = BottomSheetModal
 
-const BottomSheetModalComponent = forwardRef<Ref, Bar>((props, ref) => {
+const BottomSheetModalComponent = forwardRef<Ref>((props, ref) => {
 
     const [iconColor, setIconColor] = useState<string>("grey");
 
@@ -20,6 +20,16 @@ const BottomSheetModalComponent = forwardRef<Ref, Bar>((props, ref) => {
 
     const router = useRoute()
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
+
+    const { selectedBar } = useAppSelector(state => state.selectedBar);
+
+    if (!selectedBar) {
+        return (
+            <View>
+                <Text>No data</Text>
+            </View>
+        )
+    }
 
     return (
         <BottomSheetModal
@@ -35,11 +45,11 @@ const BottomSheetModalComponent = forwardRef<Ref, Bar>((props, ref) => {
                 onPressOut={() => setIconColor("grey")}
             />
             <View style={styles.contentContainer}>
-                <RedirectToBarComponent data={props} navigation={{ route: router, navigation }}>
-                    <Text style={styles.containerHeadline}>{props.name}</Text>
+                <RedirectToBarComponent data={selectedBar} navigation={{ route: router, navigation }}>
+                    <Text style={styles.containerHeadline}>{selectedBar.name}</Text>
                 </RedirectToBarComponent>
                 {/* images */}
-                <HorizontalImageScroll images={props.images} heightImage={200} />
+                <HorizontalImageScroll images={selectedBar.images.map(image => image.url)} heightImage={200} />
                 {/* information part */}
                 <View style={{
                     width: '100%', height: 'auto', paddingHorizontal: 10,
@@ -49,19 +59,20 @@ const BottomSheetModalComponent = forwardRef<Ref, Bar>((props, ref) => {
                 }}>
                     <View style={{ flex: 2, flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'center' }}>
                         <Text style={{ fontSize: 20, color: "#fff" }}>
-                            {props.address}
+                            {selectedBar.address}
                         </Text>
                         <Text style={{ fontSize: 18, color: "grey" }}>
-                            {props.state}  -  {props.city}
+                            {selectedBar.state}  -  {selectedBar.city}
                         </Text>
                     </View>
                     <View style={{ flex: 2, flexDirection: 'column', alignItems: 'flex-end', justifyContent: 'center' }}>
                         <Text style={{ fontSize: 20, color: "#fff" }}>
-                            Rating: {props.rating}{<Star color="yellow" fill="yellow" style={{ width: 12, height: 12 }} />}
+                            {/* Add rating in the future */}
+                            Rating: 4.65{<Star color="yellow" fill="yellow" style={{ width: 12, height: 12 }} />}
                             /5{<Star color="yellow" fill="yellow" style={{ width: 12, height: 12 }} />}
                         </Text>
                         <Text style={{ fontSize: 18, color: "grey", alignContent: 'flex-end' }}>
-                            {props.zipCode}
+                            {selectedBar.zipCode}
                         </Text>
                     </View>
                 </View>
@@ -71,7 +82,7 @@ const BottomSheetModalComponent = forwardRef<Ref, Bar>((props, ref) => {
                     marginTop: 50
                 }}>
                     <Text style={{ fontSize: 20, color: "#d5dbdb" }}>
-                        {props.description}
+                        {selectedBar.description}
                     </Text>
                 </View>
             </View>

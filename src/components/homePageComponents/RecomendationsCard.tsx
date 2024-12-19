@@ -1,13 +1,13 @@
 import constants from "@app/constants/constants"
-import { Bar } from "@app/types/types"
 import { Image, StyleSheet, Text, View } from "react-native"
 import { useNavigation, useRoute } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MainStackParamList } from "@app/types/navigation"
 import RedirectToBarComponent from "../bottomSheet/RedirectToBarComponent"
+import { BarResponse } from "@app/types/apiResponseTypes"
 
 type Props = {
-    bar: Bar
+    bar: BarResponse
 }
 
 const RecomendationsCard = ({ bar }: Props) => {
@@ -15,18 +15,23 @@ const RecomendationsCard = ({ bar }: Props) => {
     const router = useRoute()
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
+    if (!bar) return null;
+
     return (
         <View style={styles.container}>
             {/* Image */}
             <View style={styles.imageContainer}>
                 <Image 
-                    source={{ uri: bar.images[0] }}
+                    source={{ uri: bar.images?.[0]?.url }}
                     style={styles.image}
                 />
             </View>
             {/* Caption */}
             <View style={styles.textContainer}>
-                <RedirectToBarComponent data={bar} navigation={{ route: router, navigation: navigation }}>
+                <RedirectToBarComponent 
+                    data={bar} 
+                    navigation={{ route: router, navigation: navigation }}
+                >
                     <Text style={styles.text}>{bar.name}</Text>
                 </RedirectToBarComponent>
             </View>

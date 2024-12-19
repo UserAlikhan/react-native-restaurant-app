@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
     button: {
         borderWidth: 2,
         borderColor: "#000",
-        backgroundColor: "#2e86c1",
+        backgroundColor: "red",
         borderRadius: 55,
         paddingHorizontal: 10,
         paddingVertical: 8,
@@ -25,7 +25,8 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 24,
-        fontWeight: 'bold',
-        alignSelf: 'center'
+        fontWeight: '700',
+        alignSelf: 'center',
+        color: "#fff",
     }
 })

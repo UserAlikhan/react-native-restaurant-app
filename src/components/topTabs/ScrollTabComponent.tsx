@@ -33,8 +33,10 @@ const styles = StyleSheet.create({
     container: {
         width: '100%', height: 'auto', 
         minHeight: constants.TAB_SECTION_HEIGHT, 
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     scrollView: {
-        flex: 1
+        flex: 1,
     }
 })

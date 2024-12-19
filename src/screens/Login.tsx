@@ -1,68 +1,95 @@
-import { User, Lock, ArrowRightIcon } from "lucide-react-native"
-import { Image, ImageBackground, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
-import { LinearGradient } from 'expo-linear-gradient';
-import { useNavigation } from "@react-navigation/native";
+import { MainStackParamList } from "@app/types/navigation"
+import { useAuth, useSignIn } from "@clerk/clerk-expo"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { MainStackParamList } from "../types/navigation";
+import { useNavigation } from '@react-navigation/native'
+import { ArrowRightIcon, Lock, User } from "lucide-react-native"
+import { useCallback, useState } from "react"
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native"
 
 const Login = () => {
-    
+
+    const { signIn, setActive, isLoaded } = useSignIn()
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+
+    const { isSignedIn } = useAuth();
+
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>()
 
-    const handleRegisterPage = () => {
-        navigation.navigate("SignUp")
+    if (isSignedIn) {
+        navigation.navigate('Profile');
     }
-    
+
+    const onSignInPress = useCallback(async () => {
+        if (!isLoaded) return;
+
+        try {
+            const signInAttempt = await signIn.create({
+                identifier: email,
+                password: password,
+            });
+
+            if (signInAttempt.status == 'complete') {
+                await setActive({ session: signInAttempt.createdSessionId });
+                navigation.navigate('Home');
+            } else {
+                console.error(JSON.stringify(signInAttempt, null, 2));
+            }
+        } catch (err) {
+            console.error(JSON.stringify(err, null, 2));
+        }
+    }, [isLoaded, email, password])
+
     return (
         <View style={styles.container}>
-            <View style={styles.topImageContainer}>
-                <Image
-                    source={require("../images/SignupTopImg.png")}
-                    style={styles.topImage}
-                />
-            </View>
-            <View style={styles.titleContainer}>
-                <Text style={styles.titleText}>Hello</Text>
-            </View>
-            <View>
-                <Text style={styles.subtitle}>Sign in to your account</Text>
-            </View>
-            <View style={styles.inputContainer}>
-                <User size={24} color={'#9A9A9A'} style={styles.inputUserIcon} />
-                <TextInput style={styles.textInput} placeholder="Email" />
-            </View>
-            <View style={styles.inputContainer}>
-                <Lock size={24} color={'#9A9A9A'} style={styles.inputUserIcon} />
-                <TextInput style={styles.textInput} placeholder="Password" secureTextEntry={true} />
-            </View>
-            <View>
-                <Text style={styles.forgetPasswordText}>Forget your password?</Text>
-            </View>
-            <View style={styles.signInButtonContainer}>
-                <Text style={styles.signInText}>Sign In</Text>
-                <LinearGradient
-                    colors={["#F97794", "#623AA2"]}
-                    style={styles.linearGradient}
-                >
-                    <ArrowRightIcon
-                        size={24}
-                        color={"#fff"}
-
+            <View style={styles.formContainer}>
+                <View style={styles.titleContainer}>
+                    <Text style={styles.titleText}>Hello</Text>
+                </View>
+                <View>
+                    <Text style={styles.subtitle}>Sign in to your account</Text>
+                </View>
+                <View style={styles.inputContainer}>
+                    <User size={24} color={'#9A9A9A'} style={styles.inputUserIcon} />
+                    <TextInput
+                        style={styles.textInput} placeholder="Enter email"
+                        autoCapitalize="none" value={email}
+                        onChangeText={(value) => setEmail(value)}
                     />
-                </LinearGradient>
-            </View>
-            <TouchableOpacity onPress={() => handleRegisterPage()}>
-                <Text style={styles.footerText}>Don't have an account?
-                    <Text style={{ textDecorationLine: "underline" }}>
-                        Create
+                </View>
+                <View style={styles.inputContainer}>
+                    <Lock size={24} color={'#9A9A9A'} style={styles.inputUserIcon} />
+                    <TextInput
+                        style={styles.textInput} placeholder="Enter password"
+                        secureTextEntry={true}
+                        onChangeText={(value) => setPassword(value)}
+                    />
+                </View>
+                <View>
+                    <Text style={styles.forgetPasswordText}>Forget your password?</Text>
+                </View>
+                {/* Sign In Button */}
+                <TouchableOpacity 
+                    style={styles.signInButtonContainer}
+                    onPress={onSignInPress}
+                >
+                    <Text style={styles.signInText}>Sign In</Text>
+                    <View style={styles.arrowContainer}>
+                        <ArrowRightIcon
+                            size={24}
+                            color={"#fff"}
+                        />
+                    </View>
+                </TouchableOpacity>
+                {/* Redirect to SignUp Button */}
+                <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+                    <Text style={styles.footerText}>Don't have an account?
+                        <Text style={{ textDecorationLine: "underline" }}>
+                            Create
+                        </Text>
                     </Text>
-                </Text>
-            </TouchableOpacity>
-            <View style={styles.leftVectorContainer}>
-                <ImageBackground
-                    source={require('../images/LeftVectorImg.png')}
-                    style={styles.leftVectorImage}
-                />
+                </TouchableOpacity>
             </View>
         </View>
     )
@@ -74,15 +101,8 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: "#fff",
         flex: 1,
-        position: 'relative'
-    },
-    topImageContainer: {
-        width: '100%',
-    },
-    topImage: {
-        width: '100%',
-        height: 150,
-        resizeMode: 'stretch'
+        position: 'relative',
+        justifyContent: 'center'
     },
     titleContainer: {
         marginTop: 20
@@ -131,7 +151,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         marginTop: 150,
         width: '90%',
-        justifyContent: 'flex-end'
+        justifyContent: 'flex-end',
+        gap: 10
     },
     linearGradient: {
         height: 34,
@@ -147,13 +168,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginTop: 130,
     },
-    leftVectorContainer: {
-        position: 'absolute',
-        bottom: 0,
-        left: 0
+    arrowContainer: {
+        paddingHorizontal: 15,
+        paddingVertical: 5,
+        borderRadius: 100,
+        backgroundColor: 'red',
     },
-    leftVectorImage: {
-        height: 350,
-        width: 150
+    formContainer: {
+        // borderWidth: 2,
     }
 })

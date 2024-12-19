@@ -2,13 +2,16 @@ import { StyleSheet, View } from "react-native"
 import RecomendationsTitle from "./RecomendationsTitle"
 import constants from "@app/constants/constants"
 import RecomendationsHorizontalScroll from "./RecomendationsHorizontalScroll"
+import { useAppSelector } from "@app/store/hooks"
 
 type Props = {
-    title: string
+    title: string;
 }
 
 const RecomendationsComponent = ({ title }: Props) => {
-    
+
+    const { nearestBars, allBars } = useAppSelector(state => state.bars)
+
     return (
         <View style={styles.container}>
             {/* Title */}
@@ -17,7 +20,11 @@ const RecomendationsComponent = ({ title }: Props) => {
             </View>
             {/* Cards */}
             <View style={styles.cardsContainer}>
-                <RecomendationsHorizontalScroll />
+                { title === "Most Popular" || title === "In this area" ?
+                    <RecomendationsHorizontalScroll bars={allBars} />
+                    : title === "Nearest to you" 
+                    &&  <RecomendationsHorizontalScroll bars={nearestBars} />
+                }
             </View>
         </View>
     )

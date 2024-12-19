@@ -1,9 +1,14 @@
 import constants from "@app/constants/constants"
 import { ScrollView, StyleSheet, View } from "react-native"
 import RecomendationsCard from "./RecomendationsCard"
-import bars from "@app/data/bars"
+import { BarResponse } from "@app/types/apiResponseTypes"
 
-const RecomendationsHorizontalScroll = () => {
+type Props = {
+    bars: BarResponse[];
+}
+
+const RecomendationsHorizontalScroll = ({ bars }: Props) => {
+
     return (
         <View style={styles.container}>
             <ScrollView
@@ -13,7 +18,7 @@ const RecomendationsHorizontalScroll = () => {
                 decelerationRate={'fast'}
                 contentContainerStyle={styles.scrollViewContainer}
             >
-                {bars.map((bar, idx) => (
+                {bars && bars.map((bar, idx) => (
                     <RecomendationsCard key={idx} bar={bar} />
                 ))}
             </ScrollView>

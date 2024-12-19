@@ -6,6 +6,7 @@ import { MainStackParamList } from "../types/navigation";
 import Bar from "../screens/Bar";
 import SignUp from "../screens/SignUp";
 import Login from "../screens/Login";
+import Profile from "@app/screens/Profile";
 
 const Stack = createNativeStackNavigator<MainStackParamList>()
 
@@ -28,6 +29,9 @@ const MainStack = () => {
                         headerShown: false
                     }}/>
                     <Stack.Screen name="Login" component={Login} options={{
+                        headerShown: false
+                    }}/>
+                    <Stack.Screen name="Profile" component={Profile} options={{
                         headerShown: false
                     }}/>
                 </Stack.Navigator>

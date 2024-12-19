@@ -1,10 +1,10 @@
-import { Bar } from "@app/types/types"
+import { BarResponse } from "@app/types/apiResponseTypes";
 import { StyleSheet, Text, View } from "react-native"
 import { Callout, Marker } from "react-native-maps"
 
 type Props = {
-    bar: Bar;
-    onCalloutPressed: (bar: Bar) => void;
+    bar: BarResponse;
+    onCalloutPressed: (bar: BarResponse) => void;
 }
 
 const MarkerComponent = ({ bar, onCalloutPressed }: Props) => {
@@ -12,7 +12,7 @@ const MarkerComponent = ({ bar, onCalloutPressed }: Props) => {
     return (
         <>
             <Marker
-                coordinate={bar.coordinates}
+                coordinate={{ latitude: bar.longitude, longitude: bar.latitude }}
             >
                 <Callout onPress={() => onCalloutPressed(bar)}>
                     <View style={styles.textContainer}>

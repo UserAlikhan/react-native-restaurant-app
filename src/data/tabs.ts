@@ -1,10 +1,10 @@
 const tabs = [
     "Live",
     "Info",
-    "Menu",
+    // "Menu",
     "Location",
-    "Statistics",
-    'Predictions'
+    // "Statistics",
+    // 'Predictions'
 ]
 
 export default tabs

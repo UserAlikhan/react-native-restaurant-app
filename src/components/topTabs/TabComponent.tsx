@@ -9,13 +9,17 @@ type Props = {
 }
 
 const TabComponent = ({ isActive, name, index, handleTabPress }: Props) => {
-
     return (
         <TouchableOpacity 
-            style={[styles.button, isActive ? styles.isActiveBg : styles.notActiveBg]}
+            style={styles.button}
             onPress={() => handleTabPress(index)}
         >
-            <Text style={styles.text}>{name}</Text>
+            <Text style={[
+                styles.text, 
+                isActive ? styles.activeText : styles.inactiveText
+            ]}>
+                {name}
+            </Text>
         </TouchableOpacity>
     )
 }
@@ -24,19 +28,20 @@ export default TabComponent
 
 const styles = StyleSheet.create({
     button: {
-        height: '90%', width: 'auto', 
-        borderWidth: 2, borderRadius: 55, 
-        paddingHorizontal: 20, marginHorizontal: 5, 
-        alignItems: 'center', justifyContent: 'center'
+        paddingHorizontal: 20, 
+        marginHorizontal: 5,
+        alignItems: 'center', 
+        justifyContent: 'center',
     }, 
     text: {
-        fontSize: 18, fontWeight: 'bold', 
-        color: 'black', alignSelf: 'center',
+        fontSize: 18,
     },
-    isActiveBg: {
-        backgroundColor: 'red'
+    activeText: {
+        color: 'red',
+        fontWeight: 'bold',
     },
-    notActiveBg: {
-        backgroundColor: '#fff'
+    inactiveText: {
+        color: 'black',
+        fontWeight: 'normal',
     }
 })

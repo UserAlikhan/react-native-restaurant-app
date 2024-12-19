@@ -1,14 +1,14 @@
 import type { RouteProp } from "@react-navigation/native"
-import { Bar } from "./types"
+import { BarResponse } from "./apiResponseTypes"
 
 export type MainStackParamList = {
     BottomNavigation: undefined,
     Home: undefined,
-    Account: undefined,
-    Bar: Bar,
+    Bar: undefined,
     Login: undefined,
     SignUp: undefined,
-    SpecificBar: Bar,
+    SpecificBar: undefined,
+    Profile: undefined,
 }
 
 export type HomeScreenRouteProp = RouteProp<MainStackParamList, "Home">

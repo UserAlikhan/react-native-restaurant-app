@@ -1,6 +1,7 @@
 import { StyleSheet, View } from "react-native"
 import Header from "../header/Header"
 import ScrollTabComponent from "../topTabs/ScrollTabComponent"
+import ArrowHeader from "../header/ArrowHeader";
 
 type Props = {
     currentPage: number;
@@ -12,7 +13,7 @@ const HeaderWithTopBarTemplate = ({ currentPage, children, handleTabPress }: Pro
 
     return (
         <View style={styles.container}>
-            <Header />
+            <ArrowHeader />
             <ScrollTabComponent currentPage={currentPage} handleTabPress={handleTabPress}/>
             
             <View style={styles.content}>
