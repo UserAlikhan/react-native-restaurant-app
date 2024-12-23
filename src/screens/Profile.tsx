@@ -1,14 +1,14 @@
 import { Text, View, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
-import { useAuth } from "@clerk/clerk-expo"
+import { useAuth, useUser } from "@clerk/clerk-expo"
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MainStackParamList } from "@app/types/navigation"
 
-
 const Profile = () => {
 
     const { signOut } = useAuth()
+    const { user } = useUser();
 
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>()
 
@@ -25,8 +25,8 @@ const Profile = () => {
                     source={{ uri: 'https://via.placeholder.com/150' }}
                     style={styles.profileImage}
                 /> */}
-                <Text style={styles.name}>John Doe</Text>
-                <Text style={styles.email}>john.doe@example.com</Text>
+                <Text style={styles.name}>{user?.username}</Text>
+                <Text style={styles.email}>{user?.emailAddresses[0].emailAddress}</Text>
             </View>
 
             <View style={styles.section}>
@@ -38,7 +38,7 @@ const Profile = () => {
                         style={styles.restaurantImage}
                     />
                     <View style={styles.favoriteInfo}>
-                        <Text style={styles.restaurantName}>Italian Restaurant</Text>
+                        <Text style={styles.restaurantName}>PDT (Please Don't Tell Me)</Text>
                         <Text style={styles.cuisine}>Italian • $$</Text>
                     </View>
                     <MaterialIcons name="favorite" size={24} color="#FF4444" />

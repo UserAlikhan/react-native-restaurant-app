@@ -59,7 +59,7 @@ const SignUp = () => {
         return (
             <View style={{ height: '100%', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                 <Text>Verify Your Email Address</Text>
-                <TextInput 
+                <TextInput
                     value={code}
                     placeholder="Enter your verification code"
                     onChangeText={(value) => setCode(value)}
@@ -84,29 +84,29 @@ const SignUp = () => {
                 </View>
                 <View style={styles.inputContainer}>
                     <Mail size={24} color={'#9A9A9A'} style={styles.inputUserIcon} />
-                    <TextInput 
-                        style={styles.textInput} placeholder="Enter email" 
+                    <TextInput
+                        style={styles.textInput} placeholder="Enter email"
                         autoCapitalize="none" value={email}
                         onChangeText={(value) => setEmail(value)}
                     />
                 </View>
                 <View style={styles.inputContainer}>
                     <User size={24} color={'#9A9A9A'} style={styles.inputUserIcon} />
-                    <TextInput 
-                        style={styles.textInput} placeholder="Username" 
+                    <TextInput
+                        style={styles.textInput} placeholder="Username"
                         value={userName}
                         onChangeText={(value) => setUserName(value)}
                     />
                 </View>
                 <View style={styles.inputContainer}>
                     <Lock size={24} color={'#9A9A9A'} style={styles.inputUserIcon} />
-                    <TextInput 
-                        style={styles.textInput} placeholder="Password" 
+                    <TextInput
+                        style={styles.textInput} placeholder="Password"
                         secureTextEntry={true} value={password}
                         onChangeText={(value) => setPassword(value)}
                     />
                 </View>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.signInButtonContainer}
                     onPress={() => onSignUpPress()}
                 >
@@ -211,7 +211,6 @@ const styles = StyleSheet.create({
         height: 40,
         resizeMode: 'contain',
         borderRadius: 100,
-        borderWidth: 1,
         alignSelf: 'center',
         marginTop: 25
     },

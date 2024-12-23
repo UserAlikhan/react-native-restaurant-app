@@ -18,7 +18,7 @@ const Login = () => {
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>()
 
     if (isSignedIn) {
-        navigation.navigate('Profile');
+        navigation.navigate('BottomNavigation');
     }
 
     const onSignInPress = useCallback(async () => {
@@ -32,7 +32,7 @@ const Login = () => {
 
             if (signInAttempt.status == 'complete') {
                 await setActive({ session: signInAttempt.createdSessionId });
-                navigation.navigate('Home');
+                navigation.navigate('Profile');
             } else {
                 console.error(JSON.stringify(signInAttempt, null, 2));
             }

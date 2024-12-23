@@ -24,7 +24,16 @@ const BottomNavigation = () => {
                 component={Home}
                 options={{
                     tabBarActiveTintColor: "red",
-                    tabBarLabel: "Home",
+                    tabBarLabel: ({ focused }: { focused: boolean }) => {
+                        return (
+                            <Text
+                                style={{
+                                    fontSize: 12, color: focused ? 'red' : 'grey'
+                                }}>
+                                Home
+                            </Text>
+                        )
+                    },
                     tabBarIcon: ({ focused, color, size }: { focused: boolean, color: string, size: number }) => (
                         <HomeIcon color={color} size={focused ? size : size + 5} />
                     )
@@ -35,7 +44,11 @@ const BottomNavigation = () => {
                 component={Explore}
                 options={{
                     tabBarActiveTintColor: "red",
-                    tabBarLabel: "Explore",
+                    tabBarLabel: ({ focused }: { focused: boolean }) => {
+                        return (
+                            <Text style={{ fontSize: 12, color: focused ? 'red' : 'grey' }}>Explore</Text>
+                        )
+                    },
                     tabBarIcon: ({ focused, color, size }: { focused: boolean, color: string, size: number }) => (
                         <LocateIcon color={color} size={focused ? size : size + 5} />
                     ),
@@ -46,8 +59,13 @@ const BottomNavigation = () => {
                 component={isSignedIn ? Profile : SignUp}
                 options={{
                     tabBarActiveTintColor: "red",
-                    tabBarLabel: () => {
-                        return <Text>{isSignedIn ? "Profile" : "SignUp"}</Text>
+                    tabBarLabel: ({ focused }: { focused: boolean }) => {
+                        return <Text style={{
+                            fontSize: 12,
+                            color: focused ? 'red' : 'grey'
+                        }}>
+                            {isSignedIn ? "Profile" : "SignUp"}
+                        </Text>
                     },
                     tabBarIcon: ({ focused, color, size }: { focused: boolean, color: string, size: number }) => (
                         <User2Icon color={color} size={focused ? size : size + 5} />
