@@ -9,7 +9,7 @@ const ArrowHeaderContent = () => {
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
     return (
-        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate("Home")}>
+        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate("BottomNavigation")}>
             <View style={styles.main}>
                 <View style={styles.content}>
                     <ArrowLeft size={45} color="black" />

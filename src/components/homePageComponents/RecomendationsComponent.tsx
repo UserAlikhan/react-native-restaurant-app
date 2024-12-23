@@ -16,14 +16,14 @@ const RecomendationsComponent = ({ title }: Props) => {
         <View style={styles.container}>
             {/* Title */}
             <View style={styles.titleContainer}>
-                <RecomendationsTitle title={title}/>
+                <RecomendationsTitle title={title} />
             </View>
             {/* Cards */}
             <View style={styles.cardsContainer}>
-                { title === "Most Popular" || title === "In this area" ?
+                {title === "Most Popular" || title === "In this area" ?
                     <RecomendationsHorizontalScroll bars={allBars} />
-                    : title === "Nearest to you" 
-                    &&  <RecomendationsHorizontalScroll bars={nearestBars} />
+                    : title === "Nearest to you"
+                    && <RecomendationsHorizontalScroll bars={nearestBars} />
                 }
             </View>
         </View>

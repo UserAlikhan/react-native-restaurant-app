@@ -9,6 +9,7 @@ export type MainStackParamList = {
     SignUp: undefined,
     SpecificBar: undefined,
     Profile: undefined,
+    AllBars: undefined,
 }
 
 export type HomeScreenRouteProp = RouteProp<MainStackParamList, "Home">

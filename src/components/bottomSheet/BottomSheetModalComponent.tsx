@@ -7,12 +7,14 @@ import RedirectToBarComponent from "./RedirectToBarComponent"
 import HorizontalImageScroll from "../horizontallImageScroll/HorizontalImageScroll"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MainStackParamList } from "@app/types/navigation"
-import { useAppSelector } from "@app/store/hooks"
+import { useAppDispatch, useAppSelector } from "@app/store/hooks"
+import { resetSelectedBar } from "@app/store/slices/selectedBarSlice"
 
 export type Ref = BottomSheetModal
 
 const BottomSheetModalComponent = forwardRef<Ref>((props, ref) => {
 
+    const dispatch = useAppDispatch()
     const [iconColor, setIconColor] = useState<string>("grey");
 
     const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
@@ -40,7 +42,10 @@ const BottomSheetModalComponent = forwardRef<Ref>((props, ref) => {
             <CircleX
                 color={iconColor} size={36}
                 style={{ position: "absolute", top: 0, right: 15 }}
-                onPress={() => dismiss()}
+                onPress={() => {
+                    dismiss()
+                    dispatch(resetSelectedBar())
+                }}
                 onPressIn={() => setIconColor("red")}
                 onPressOut={() => setIconColor("grey")}
             />

@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import * as Location from 'expo-location';
 import { BarResponse } from "@app/types/apiResponseTypes";
 import { getAllBars, getNearestBars } from "@app/apiRequests/barCalls";
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { useAppDispatch } from "@app/store/hooks";
 import { setAllBars, setNearestBars } from "@app/store/slices/barSlice";
 
 export default function Home() {
@@ -33,7 +33,7 @@ export default function Home() {
             }
 
             let currentLocation = await Location.getCurrentPositionAsync({});
-            if (currentLocation) {  
+            if (currentLocation) {
                 setLocation(currentLocation);
                 getNearestBarsAsync(currentLocation);
                 getAllBarsAsync();
