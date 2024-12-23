@@ -7,16 +7,17 @@ import Live from "../sections/Live";
 type AnimatedCardProps = {
     tab: string;
     index: number;
+    handleTabPress: (index: number) => void;
 }
 
-const AnimatedCard = ({ tab, index }: AnimatedCardProps) => {
+const AnimatedCard = ({ tab, index, handleTabPress }: AnimatedCardProps) => {
 
     return (
         <>
             {tab === constants.LAST_TAB_SECTION && (
                 <>
                     <Info />
-                    <GoToTopButton />
+                    <GoToTopButton handleTabPress={handleTabPress} />
                 </>
             )}
             {tab === "Info" && (

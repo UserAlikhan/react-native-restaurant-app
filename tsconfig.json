@@ -4,7 +4,9 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/*"]
-    }
+      "@app/*": [
+        "src/*"
+      ]
+    },
   }
 }

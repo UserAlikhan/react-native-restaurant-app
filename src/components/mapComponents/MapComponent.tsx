@@ -112,18 +112,12 @@ const MapComponent = () => {
                 onRegionChangeComplete={onRegionChange}
                 ref={mapRef}
             >
-                {allBars.map((bar, index) => {
-                    if (!bar.latitude || !bar.longitude) {
-                        console.log('Invalid coordinates for bar:', bar);
-                        return null;
-                    }
-                    return (
-                        <MarkerComponent
-                            key={index} bar={bar}
-                            onCalloutPressed={onCalloutPressed}
-                        />
-                    )
-                })}
+                {allBars.map((bar, index) => (
+                    <MarkerComponent
+                        key={bar.id || index} bar={bar}
+                        onCalloutPressed={onCalloutPressed}
+                    />
+                ))}
             </MapView>
             <TouchableOpacity
                 style={styles.locationButton}

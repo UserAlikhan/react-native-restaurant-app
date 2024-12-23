@@ -8,13 +8,14 @@ type VerticalListProps = {
     data: string[];
     flatListRef: React.RefObject<Animated.FlatList<string>>,
     onScroll: (page: number) => void;
+    handleTabPress: (index: number) => void;
 }
 
 type ViewableItemsProps = {
     viewableItems: ViewToken<string>[]
 }
 
-const AnimatedVerticalList = ({ data, flatListRef, onScroll }: VerticalListProps) => {
+const AnimatedVerticalList = ({ data, flatListRef, onScroll, handleTabPress }: VerticalListProps) => {
 
     if (!data) {
         return null;
@@ -42,7 +43,11 @@ const AnimatedVerticalList = ({ data, flatListRef, onScroll }: VerticalListProps
             data={data}
             contentContainerStyle={{}}
             renderItem={({ item, index }) => (
-                <AnimatedCard tab={item} index={index} />
+                <AnimatedCard
+                    tab={item}
+                    index={index}
+                    handleTabPress={handleTabPress}
+                />
             )}
             snapToInterval={constants.SECTION_HEIGHT}
             decelerationRate={"normal"}

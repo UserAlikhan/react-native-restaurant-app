@@ -25,6 +25,10 @@ export default function Home() {
     }
 
     useEffect(() => {
+        getAllBarsAsync();
+    }, [])
+
+    useEffect(() => {
         (async () => {
             let { status } = await Location.requestForegroundPermissionsAsync();
             if (status !== 'granted') {
@@ -36,10 +40,9 @@ export default function Home() {
             if (currentLocation) {
                 setLocation(currentLocation);
                 getNearestBarsAsync(currentLocation);
-                getAllBarsAsync();
             }
         })();
-    }, []);
+    }, [location]);
 
     return (
         <HeaderTemplate>

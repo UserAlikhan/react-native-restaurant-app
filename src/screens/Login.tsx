@@ -70,7 +70,7 @@ const Login = () => {
                     <Text style={styles.forgetPasswordText}>Forget your password?</Text>
                 </View>
                 {/* Sign In Button */}
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.signInButtonContainer}
                     onPress={onSignInPress}
                 >

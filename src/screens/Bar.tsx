@@ -16,10 +16,13 @@ export default function Bar() {
         setCurrentPage(index);
         flatListRef.current?.scrollToIndex({ index: index, animated: true });
     }
-    
+
     return (
         <HeaderWithTopBarTemplate currentPage={currentPage} handleTabPress={handleTabPress}>
-            <AnimatedVerticalList data={tabs} flatListRef={flatListRef} onScroll={handleScroll} />
+            <AnimatedVerticalList
+                data={tabs} flatListRef={flatListRef}
+                onScroll={handleScroll} handleTabPress={handleTabPress}
+            />
         </HeaderWithTopBarTemplate>
     )
 }

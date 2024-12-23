@@ -1,8 +1,12 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native"
 
-const GoToTopButton = () => {
+type Props = {
+    handleTabPress: (index: number) => void;
+}
+
+const GoToTopButton = ({ handleTabPress }: Props) => {
     return (
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => handleTabPress(0)}>
             <View style={{}}>
                 <Text style={styles.text}>Go to the top</Text>
             </View>
