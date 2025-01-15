@@ -1,5 +1,12 @@
 import { useRef, useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+    Alert,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import MarkerComponent from "@app/components/mapComponents/MarkerComponent";
@@ -8,42 +15,43 @@ import BottomSheetModalComponent from "../bottomSheet/BottomSheetModalComponent"
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { setSelectedBar } from "@app/store/slices/selectedBarSlice";
 import { BarResponse } from "@app/types/apiResponseTypes";
-import * as Location from 'expo-location';
+import * as Location from "expo-location";
 
 const MapComponent = () => {
-
     const bottomSheetRef = useRef<BottomSheetModal | null>(null);
     const mapRef = useRef<MapView | null>(null);
 
-    const { allBars } = useAppSelector(state => state.bars);
-    const { selectedBar } = useAppSelector(state => state.selectedBar);
+    const { allBars } = useAppSelector((state) => state.bars);
+    const { selectedBar } = useAppSelector((state) => state.selectedBar);
 
     const dispatch = useAppDispatch();
 
-    const [location, setLocation] = useState<Location.LocationObject | null>(null);
+    const [location, setLocation] = useState<Location.LocationObject | null>(
+        null
+    );
     const [searchQuery, setSearchQuery] = useState("");
 
     const onRegionChange = (region: Region) => {
-        console.log(region)
-    }
+        console.log(region);
+    };
 
     const onCalloutPressed = (bar: BarResponse) => {
         dispatch(setSelectedBar(bar));
         bottomSheetRef.current?.present();
-    }
+    };
 
     const checkStatus = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== 'granted') {
-            console.log('Permission to access location was denied');
+        if (status !== "granted") {
+            console.log("Permission to access location was denied");
             return false;
         }
 
         return true;
-    }
+    };
 
     const goToUserLocation = async () => {
-        if (!await checkStatus()) return;
+        if (!(await checkStatus())) return;
 
         if (!location) {
             let currentLocation = await Location.getCurrentPositionAsync({});
@@ -68,10 +76,11 @@ const MapComponent = () => {
     const handleSearch = () => {
         if (!searchQuery) return;
 
-        const searchedBar = allBars.find(bar =>
-            bar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            bar.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            bar.zipCode.toLowerCase().includes(searchQuery.toLowerCase())
+        const searchedBar = allBars.find(
+            (bar) =>
+                bar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                bar.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                bar.zipCode.toLowerCase().includes(searchQuery.toLowerCase())
         );
 
         if (searchedBar) {
@@ -88,7 +97,7 @@ const MapComponent = () => {
         } else {
             Alert.alert("Not Found", "No bar matches your search criteria");
         }
-    }
+    };
 
     return (
         <View style={styles.container}>
@@ -114,7 +123,8 @@ const MapComponent = () => {
             >
                 {allBars.map((bar, index) => (
                     <MarkerComponent
-                        key={bar.id || index} bar={bar}
+                        key={bar.id || index}
+                        bar={bar}
                         onCalloutPressed={onCalloutPressed}
                     />
                 ))}
@@ -129,33 +139,33 @@ const MapComponent = () => {
                 <BottomSheetModalComponent ref={bottomSheetRef} />
             )}
         </View>
-    )
-}
+    );
+};
 
-export default MapComponent
+export default MapComponent;
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#F5FCFF",
     },
     map: {
-        position: 'absolute',
+        position: "absolute",
         top: 0,
         left: 0,
         right: 0,
         bottom: 0,
     },
     locationButton: {
-        position: 'absolute',
+        position: "absolute",
         bottom: 25,
         right: 25,
-        backgroundColor: 'white',
+        backgroundColor: "white",
         padding: 15,
         borderRadius: 30,
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 2,
@@ -168,17 +178,17 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     searchContainer: {
-        position: 'absolute',
+        position: "absolute",
         top: 75,
-        width: '90%',
+        width: "90%",
         zIndex: 1,
     },
     searchInput: {
         height: 50,
-        backgroundColor: 'white',
+        backgroundColor: "white",
         paddingHorizontal: 15,
         borderRadius: 20,
-        shadowColor: '#000',
+        shadowColor: "#000",
         shadowOffset: {
             width: 0,
             height: 2,

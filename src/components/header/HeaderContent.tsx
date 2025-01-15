@@ -15,7 +15,7 @@ const HeaderContent = () => {
                         source={require('../../images/Logo.png')}
                         style={styles.image}
                     />
-                    <Text style={styles.text}>Vibe View</Text>
+                    <Text style={styles.text}>VibeView</Text>
                 </View>
             </View>
         </TouchableOpacity>
