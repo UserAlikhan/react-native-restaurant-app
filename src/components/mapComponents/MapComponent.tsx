@@ -1,12 +1,5 @@
 import { useRef, useState } from "react";
-import {
-    Alert,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
-} from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import MarkerComponent from "@app/components/mapComponents/MarkerComponent";
@@ -16,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { setSelectedBar } from "@app/store/slices/selectedBarSlice";
 import { BarResponse } from "@app/types/apiResponseTypes";
 import * as Location from "expo-location";
+import MapPageSearchComponent from "../searchField/MapPageSearchComponent";
 
 const MapComponent = () => {
     const bottomSheetRef = useRef<BottomSheetModal | null>(null);
@@ -29,7 +23,6 @@ const MapComponent = () => {
     const [location, setLocation] = useState<Location.LocationObject | null>(
         null
     );
-    const [searchQuery, setSearchQuery] = useState("");
 
     const onRegionChange = (region: Region) => {
         console.log(region);
@@ -73,44 +66,12 @@ const MapComponent = () => {
         }
     };
 
-    const handleSearch = () => {
-        if (!searchQuery) return;
-
-        const searchedBar = allBars.find(
-            (bar) =>
-                bar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                bar.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                bar.zipCode.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-
-        if (searchedBar) {
-            mapRef.current?.animateCamera({
-                center: {
-                    latitude: searchedBar.latitude,
-                    longitude: searchedBar.longitude,
-                },
-                zoom: 15,
-            });
-
-            dispatch(setSelectedBar(searchedBar));
-            bottomSheetRef.current?.present();
-        } else {
-            Alert.alert("Not Found", "No bar matches your search criteria");
-        }
-    };
-
     return (
         <View style={styles.container}>
-            <View style={styles.searchContainer}>
-                <TextInput
-                    style={styles.searchInput}
-                    placeholder="Search by name, address or zip code"
-                    value={searchQuery}
-                    onChangeText={setSearchQuery}
-                    onSubmitEditing={handleSearch}
-                    returnKeyType="search"
-                />
-            </View>
+            <MapPageSearchComponent
+                bottomSheetRef={bottomSheetRef}
+                mapRef={mapRef}
+            />
             <MapView
                 style={styles.map}
                 provider={PROVIDER_GOOGLE}

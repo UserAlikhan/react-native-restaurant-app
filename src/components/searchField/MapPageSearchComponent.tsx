@@ -1,15 +1,17 @@
 import { useAppDispatch, useAppSelector } from "@app/store/hooks";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { Alert, StyleSheet, TextInput, View } from "react-native";
 import MapView from "react-native-maps";
 import { setSelectedBar } from "@app/store/slices/selectedBarSlice";
-import { BottomSheetModal } from "@gorhom/bottom-sheet";
+import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
 
-const MapPageSearchComponent = () => {
+type Props = {
+    bottomSheetRef: React.MutableRefObject<BottomSheetModalMethods | null>;
+    mapRef: React.MutableRefObject<MapView | null>;
+};
+
+const MapPageSearchComponent = ({ bottomSheetRef, mapRef }: Props) => {
     const { allBars } = useAppSelector((state) => state.bars);
-
-    const bottomSheetRef = useRef<BottomSheetModal | null>(null);
-    const mapRef = useRef<MapView | null>(null);
 
     const dispatch = useAppDispatch();
 
