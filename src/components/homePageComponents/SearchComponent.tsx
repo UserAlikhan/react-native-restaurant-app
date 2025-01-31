@@ -3,12 +3,11 @@ import { useAppDispatch, useAppSelector } from "@app/store/hooks";
 import { setSelectedBar } from "@app/store/slices/selectedBarSlice";
 import { BarResponse } from "@app/types/apiResponseTypes";
 import { Search } from "lucide-react-native";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
     StyleSheet,
     TextInput,
-    TouchableOpacity,
     View,
     FlatList,
     Text,
@@ -16,6 +15,7 @@ import {
 } from "react-native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { MainStackParamList } from "@app/types/navigation";
+import { debounce } from "lodash";
 
 const SearchComponent = () => {
     const { allBars } = useAppSelector((state) => state.bars);
@@ -28,17 +28,25 @@ const SearchComponent = () => {
     const navigation =
         useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
-    const handleFilterOptions = () => {
-        if (!searchQuery) return;
+    const debouncedFilterOptions = useCallback(
+        debounce((query) => {
+            if (!query) return;
 
-        const allSimilarOptions = allBars.filter(
-            (bar) =>
-                bar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                bar.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                bar.zipCode.toLowerCase().includes(searchQuery.toLowerCase())
-        );
+            const lowerCaseQuery = query.toLowerCase();
+            const allSimilarOptions = allBars.filter(
+                (bar) =>
+                    bar.name.toLowerCase().includes(lowerCaseQuery) ||
+                    bar.address.toLowerCase().includes(lowerCaseQuery) ||
+                    bar.zipCode.toLowerCase().includes(lowerCaseQuery)
+            );
 
-        setAllOptions(allSimilarOptions);
+            setAllOptions(allSimilarOptions);
+        }, 300),
+        [allBars]
+    );
+
+    const handleFilterOptions = (query: string) => {
+        debouncedFilterOptions(query);
     };
 
     const handleRedirectToBar = (bar: BarResponse) => {
@@ -51,13 +59,11 @@ const SearchComponent = () => {
         <View style={styles.container}>
             <View style={styles.inputContainer}>
                 <View style={styles.iconContainer}>
-                    <TouchableOpacity>
-                        <Search
-                            style={styles.searchIcon}
-                            size={37}
-                            color={"#000"}
-                        />
-                    </TouchableOpacity>
+                    <Search
+                        style={styles.searchIcon}
+                        size={37}
+                        color={"#000"}
+                    />
                 </View>
                 <TextInput
                     style={styles.textInput}
@@ -66,9 +72,9 @@ const SearchComponent = () => {
                     placeholder="Bars, City, Postal Code"
                     onChangeText={(text) => {
                         setSearchQuery(text);
-                        handleFilterOptions();
+                        handleFilterOptions(text);
                     }}
-                    onSubmitEditing={() => {}}
+                    onSubmitEditing={() => { }}
                 />
             </View>
             {searchQuery.length > 0 && allOptions.length > 0 && (
@@ -78,7 +84,6 @@ const SearchComponent = () => {
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({ item }) => (
                             <Pressable
-                                style={{ borderWidth: 1 }}
                                 onPress={() => handleRedirectToBar(item)}
                             >
                                 <View style={styles.optionItem}>
