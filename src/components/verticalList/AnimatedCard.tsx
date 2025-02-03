@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import React, { useEffect } from 'react';
 import constants from "../../constants/constants";
 import Info from "../sections/Info"
 import GoToTopButton from "./GoToTopButton";
@@ -35,9 +35,3 @@ const AnimatedCard = ({ tab, index, handleTabPress }: AnimatedCardProps) => {
 }
 
 export default AnimatedCard
-
-const styles = StyleSheet.create({
-    containerForLastItem: {
-
-    }
-})

@@ -10,12 +10,14 @@ import { setSelectedBar } from "@app/store/slices/selectedBarSlice";
 import { BarResponse } from "@app/types/apiResponseTypes";
 import * as Location from "expo-location";
 import MapPageSearchComponent from "../searchField/MapPageSearchComponent";
+import { useGetFromStoreOrRetrieveAllBarsHook } from "@app/customHooks/useGetFromStoreOrRetrieveAllBarsHook";
 
 const MapComponent = () => {
+
     const bottomSheetRef = useRef<BottomSheetModal | null>(null);
     const mapRef = useRef<MapView | null>(null);
 
-    const { allBars } = useAppSelector((state) => state.bars);
+    const { bars } = useGetFromStoreOrRetrieveAllBarsHook();
     const { selectedBar } = useAppSelector((state) => state.selectedBar);
 
     const dispatch = useAppDispatch();
@@ -82,7 +84,7 @@ const MapComponent = () => {
                 onRegionChangeComplete={onRegionChange}
                 ref={mapRef}
             >
-                {allBars.map((bar, index) => (
+                {bars.map((bar, index) => (
                     <MarkerComponent
                         key={bar.id || index}
                         bar={bar}

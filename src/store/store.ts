@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import barsReducer from './slices/barSlice';
 import selectedBarReducer from './slices/selectedBarSlice';
+import locationReducer from './slices/locationSlice';
 
 export const store = configureStore({
   reducer: {
     bars: barsReducer,
-    selectedBar: selectedBarReducer
+    selectedBar: selectedBarReducer,
+    location: locationReducer,
   },
 });
 

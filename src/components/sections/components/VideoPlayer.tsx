@@ -45,9 +45,10 @@ const VideoPlayer = () => {
                     onPlaybackStatusUpdate={(status) => {
                         if (status.isLoaded === true) {
                             setStatus(status as CustomPlaybackStatus);
-                        } else {
-                            console.error('Error updating playback status:');
                         }
+                    }}
+                    onError={(error) => {
+                        console.error('Video playback error:', error);
                     }}
                 />
             </TouchableOpacity>

@@ -1,5 +1,5 @@
 import constants from "@app/constants/constants";
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { useAppDispatch } from "@app/store/hooks";
 import { setSelectedBar } from "@app/store/slices/selectedBarSlice";
 import { BarResponse } from "@app/types/apiResponseTypes";
 import { Search } from "lucide-react-native";
@@ -16,9 +16,11 @@ import {
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { MainStackParamList } from "@app/types/navigation";
 import { debounce } from "lodash";
+import { useGetFromStoreOrRetrieveAllBarsHook } from "@app/customHooks/useGetFromStoreOrRetrieveAllBarsHook";
 
 const SearchComponent = () => {
-    const { allBars } = useAppSelector((state) => state.bars);
+
+    const { bars, isLoading, error } = useGetFromStoreOrRetrieveAllBarsHook();
 
     const dispatch = useAppDispatch();
 
@@ -30,10 +32,13 @@ const SearchComponent = () => {
 
     const debouncedFilterOptions = useCallback(
         debounce((query) => {
-            if (!query) return;
+            if (!query) {
+                setAllOptions([]); // Clear options when query is empty
+                return;
+            }
 
             const lowerCaseQuery = query.toLowerCase();
-            const allSimilarOptions = allBars.filter(
+            const allSimilarOptions = bars.filter(
                 (bar) =>
                     bar.name.toLowerCase().includes(lowerCaseQuery) ||
                     bar.address.toLowerCase().includes(lowerCaseQuery) ||
@@ -42,7 +47,7 @@ const SearchComponent = () => {
 
             setAllOptions(allSimilarOptions);
         }, 300),
-        [allBars]
+        [bars]
     );
 
     const handleFilterOptions = (query: string) => {
@@ -116,6 +121,7 @@ const styles = StyleSheet.create({
         width: "100%",
         alignItems: "center",
         justifyContent: "center",
+        zIndex: 1,
     },
     inputContainer: {
         flexDirection: "row",
@@ -142,6 +148,8 @@ const styles = StyleSheet.create({
         alignSelf: "center",
     },
     optionsContainer: {
+        position: "absolute",
+        top: constants.INPUT_TEXT_HEIGHT + 10,
         width: "100%",
         marginTop: 10,
         borderWidth: 1,
@@ -149,6 +157,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor: "#fff",
         maxHeight: 200,
+        zIndex: 2
     },
     optionItem: {
         flexDirection: "row",

@@ -2,14 +2,16 @@ import { StyleSheet, View } from "react-native";
 import RecomendationsTitle from "./RecomendationsTitle";
 import constants from "@app/constants/constants";
 import RecomendationsHorizontalScroll from "./RecomendationsHorizontalScroll";
-import { useAppSelector } from "@app/store/hooks";
+import { useGetFromStoreOrRetrieveNearestBarsHook } from "@app/customHooks/useGetFromStoreOrRetrieveNearestBarsHook";
+import { useGetFromStoreOrRetrieveAllBarsHook } from "@app/customHooks/useGetFromStoreOrRetrieveAllBarsHook";
 
 type Props = {
     title: string;
 };
 
 const RecomendationsComponent = ({ title }: Props) => {
-    const { nearestBars, allBars } = useAppSelector((state) => state.bars);
+    const { nearestBars } = useGetFromStoreOrRetrieveNearestBarsHook();
+    const { bars } = useGetFromStoreOrRetrieveAllBarsHook();
 
     return (
         <View style={styles.container}>
@@ -20,7 +22,7 @@ const RecomendationsComponent = ({ title }: Props) => {
             {/* Cards */}
             <View style={styles.cardsContainer}>
                 {title === "Most Popular" || title === "In this area" ? (
-                    <RecomendationsHorizontalScroll bars={allBars} />
+                    <RecomendationsHorizontalScroll bars={bars} />
                 ) : (
                     title === "Nearest to you" && (
                         <RecomendationsHorizontalScroll bars={nearestBars} />
@@ -43,6 +45,7 @@ const styles = StyleSheet.create({
             constants.RECOMENDATIONS_CARD_HEIGHT,
         marginVertical: 10,
         gap: 15,
+        zIndex: 1,
     },
     titleContainer: {
         height: constants.INPUT_TEXT_HEIGHT,

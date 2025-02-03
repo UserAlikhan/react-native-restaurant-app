@@ -1,11 +1,11 @@
 import ArrowHeaderTemplate from "@app/components/templates/ArrowHeaderTemplate"
 import { ScrollView, StyleSheet, Text, View } from "react-native"
-import { useAppSelector } from "@app/store/hooks"
 import AllBarsCard from "@app/components/ui/allbarsCard"
+import { useGetFromStoreOrRetrieveAllBarsHook } from "@app/customHooks/useGetFromStoreOrRetrieveAllBarsHook";
 
 const AllBars = () => {
 
-    const { allBars } = useAppSelector(state => state.bars)
+    const { bars } = useGetFromStoreOrRetrieveAllBarsHook();
 
     return (
         <ArrowHeaderTemplate>
@@ -18,7 +18,7 @@ const AllBars = () => {
                         contentContainerStyle={styles.scrollView}
                         decelerationRate={'fast'}
                     >
-                        {allBars.map(bar => (
+                        {bars.map(bar => (
                             <AllBarsCard key={bar.id} bar={bar} />
                         ))}
                     </ScrollView>

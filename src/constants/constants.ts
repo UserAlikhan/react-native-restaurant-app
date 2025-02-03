@@ -5,7 +5,7 @@ const windowParams = Dimensions.get("window");
 
 const TAB_SECTION_HEIGHT = height * 0.05;
 
-const HEADER_HEIGHT = height * 0.1;
+const HEADER_HEIGHT = Platform.OS === "ios" ? height * 0.12 : height * 0.1;
 
 const HEADER_MARGIN_TOP =
     StatusBar.currentHeight && StatusBar.currentHeight / 3;
@@ -48,7 +48,9 @@ const CARD_BORDER_RADIUS = 35;
 
 const GOOGLE_LOGO_SHAPE = 40;
 
-const API_URL = "http://10.0.2.2:3000";
+const API_URL = "http://3.135.246.42";
+
+const BOTTOM_NAVIGATION_HEIGHT = Platform.OS === "ios" ? 70 : 50;
 
 export default {
     TAB_SECTION_HEIGHT,
@@ -72,4 +74,5 @@ export default {
     CARD_BORDER_RADIUS,
     GOOGLE_LOGO_SHAPE,
     API_URL,
+    BOTTOM_NAVIGATION_HEIGHT,
 };

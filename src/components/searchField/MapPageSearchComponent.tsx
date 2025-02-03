@@ -1,9 +1,10 @@
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { useAppDispatch } from "@app/store/hooks";
 import { useState } from "react";
 import { Alert, StyleSheet, TextInput, View } from "react-native";
 import MapView from "react-native-maps";
 import { setSelectedBar } from "@app/store/slices/selectedBarSlice";
 import { BottomSheetModalMethods } from "@gorhom/bottom-sheet/lib/typescript/types";
+import { useGetFromStoreOrRetrieveAllBarsHook } from "@app/customHooks/useGetFromStoreOrRetrieveAllBarsHook";
 
 type Props = {
     bottomSheetRef: React.MutableRefObject<BottomSheetModalMethods | null>;
@@ -11,7 +12,7 @@ type Props = {
 };
 
 const MapPageSearchComponent = ({ bottomSheetRef, mapRef }: Props) => {
-    const { allBars } = useAppSelector((state) => state.bars);
+    const { bars } = useGetFromStoreOrRetrieveAllBarsHook();
 
     const dispatch = useAppDispatch();
 
@@ -20,7 +21,7 @@ const MapPageSearchComponent = ({ bottomSheetRef, mapRef }: Props) => {
     const handleSearch = () => {
         if (!searchQuery) return;
 
-        const searchedBar = allBars.find(
+        const searchedBar = bars.find(
             (bar) =>
                 bar.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 bar.address.toLowerCase().includes(searchQuery.toLowerCase()) ||

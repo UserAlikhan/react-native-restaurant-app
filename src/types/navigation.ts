@@ -6,7 +6,6 @@ export type MainStackParamList = {
     Home: undefined,
     Bar: undefined,
     Login: undefined,
-    SignUp: undefined,
     SpecificBar: undefined,
     Profile: undefined,
     AllBars: undefined,

@@ -47,6 +47,10 @@ const Login = () => {
         }
     }, [isLoaded, email, password]);
 
+    const handleSignUpPage = () => {
+        navigation.navigate("BottomNavigation", { screen: "SignUp" } as never);
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.formContainer}>
@@ -103,7 +107,7 @@ const Login = () => {
                 {/* Redirect to SignUp Button */}
                 <View style={styles.redirectContainer}>
                     <TouchableOpacity
-                        onPress={() => navigation.navigate("SignUp")}
+                        onPress={() => handleSignUpPage()}
                     >
                         <Text style={styles.footerText}>
                             Don't have an account?{" "}

@@ -1,30 +1,29 @@
-export enum ENUM_AVAILABILITY {
-    AVAILABLE = 'OPEN',
-    UNAVAILABLE = 'CLOSE'
-}
-
 export type ImagesResponse = {
     id: number;
     url: string;
     bar_id: number;
-    created_at: Date;
-    updated_at: Date;
-}
+    // created_at: Date;
+    // updated_at: Date;
+};
 
 export type BarResponse = {
     id: number;
     name: string;
+    average_cocktail_price: string;
     address: string;
-    city: string;
-    state: string;
-    country: string;
-    zipCode: string;
-    description: string;
     longitude: number;
     latitude: number;
-    availabilty: ENUM_AVAILABILITY;
+    state: string;
+    country: string;
+    city: string;
+    zipCode: string;
+    description?: string;
+    isOpen: boolean;
+    reserve_link?: string;
+    website_link?: string;
+    phone_number?: string;
     createdAt: Date;
     updatedAt: Date;
     distance: number;
     images: ImagesResponse[];
-}
+};

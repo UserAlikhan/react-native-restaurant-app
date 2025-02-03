@@ -6,6 +6,7 @@ import SignUp from "@app/screens/SignUp";
 import Profile from "@app/screens/Profile";
 import { useAuth } from "@clerk/clerk-expo";
 import { Text } from "react-native";
+import constants from "@app/constants/constants";
 
 const BottomNavigation = () => {
     const Tab = createBottomTabNavigator();
@@ -17,6 +18,15 @@ const BottomNavigation = () => {
             initialRouteName="Home"
             screenOptions={{
                 headerShown: false,
+                tabBarStyle: {
+                    height: constants.BOTTOM_NAVIGATION_HEIGHT,
+                    paddingBottom: 0,
+                    marginBottom: 0,
+                    marginTop: 0,
+                    marginHorizontal: 0,
+                    marginVertical: 0,
+                    backgroundColor: '#fff',
+                }
             }}
         >
             <Tab.Screen

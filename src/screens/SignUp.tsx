@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useSignUp } from "@clerk/clerk-expo";
 import { useState } from "react";
 import constants from "@app/constants/constants";
+import { Platform } from "react-native";
 
 const SignUp = () => {
     const { isLoaded, signUp, setActive } = useSignUp();
@@ -90,7 +91,7 @@ const SignUp = () => {
 
     const handleLoginPage = async () => {
         await AsyncStorage.setItem("@mapPlace", "true");
-        navigation.navigate("Login");
+        navigation.replace("Login");
     };
 
     return (
@@ -159,8 +160,15 @@ const SignUp = () => {
                 <View style={styles.googleLogoContainer}>
                     <TouchableOpacity style={styles.googleLogoButton}>
                         <Image
-                            source={require("../images/googleIcon.png")}
+                            source={Platform.select({
+                                ios: require('../images/googleIcon.png'),
+                                android: require('../images/googleIcon.png'),
+                            })}
+                            resizeMode="contain"
                             style={styles.googleLogo}
+                            onError={(error) => {
+                                console.log("Error loading image:", error);
+                            }}
                         />
                     </TouchableOpacity>
                 </View>
@@ -257,12 +265,13 @@ const styles = StyleSheet.create({
     googleLogoButton: {
         width: constants.GOOGLE_LOGO_SHAPE,
         height: constants.GOOGLE_LOGO_SHAPE,
+        justifyContent: "center",
+        alignItems: "center",
     },
     googleLogo: {
         width: constants.GOOGLE_LOGO_SHAPE,
         height: constants.GOOGLE_LOGO_SHAPE,
         resizeMode: "contain",
-        paddingVertical: 25,
         borderRadius: 100,
         alignSelf: "center",
     },

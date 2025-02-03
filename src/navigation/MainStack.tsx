@@ -22,9 +22,6 @@ const MainStack = () => {
             <Stack.Screen name="Bar" component={Bar} options={{
                 headerShown: false,
             }} />
-            <Stack.Screen name="SignUp" component={SignUp} options={{
-                headerShown: false
-            }} />
             <Stack.Screen name="Login" component={Login} options={{
                 headerShown: false
             }} />

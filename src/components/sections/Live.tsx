@@ -10,7 +10,7 @@ const Live = () => {
     return (
         <View style={styles.contentContainer}>
             {/* Text Container */}
-            <LiveText/>
+            <LiveText />
             {/* Video Container */}
             <VideoPlayer />
             {/* Choose time */}
