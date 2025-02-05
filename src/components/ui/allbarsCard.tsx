@@ -1,4 +1,3 @@
-import { addToFavorites } from "@app/apiRequests/barCalls"
 import { BarResponse } from "@app/types/apiResponseTypes"
 import { Star } from "lucide-react-native"
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
@@ -10,7 +9,7 @@ type Props = {
 const AllBarsCard = ({ bar }: Props) => {
 
     const handleAddToFavorites = (id: number) => {
-        addToFavorites(id)
+        // addToFavorites(id)
     }
 
     return (

@@ -8,7 +8,6 @@ import HorizontalImageScroll from "../horizontallImageScroll/HorizontalImageScro
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MainStackParamList } from "@app/types/navigation"
 import { useAppSelector } from "@app/store/hooks"
-import { addToFavorites } from "@app/apiRequests/barCalls"
 
 export type Ref = BottomSheetModal
 
@@ -33,7 +32,7 @@ const BottomSheetModalComponent = forwardRef<Ref>((props, ref) => {
     }
 
     const handleAddToFavorites = async () => {
-        await addToFavorites(selectedBar.id);
+        // await addToFavorites(selectedBar.id);
     }
 
     const handleClickDetails = () => {

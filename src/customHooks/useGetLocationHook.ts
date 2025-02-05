@@ -13,7 +13,7 @@ export const useGetLocationHook = () => {
     useEffect(() => {
         const getLocation = async () => {
             // If location already exists, do not try to get it again
-            if (location) return;
+            if (location) return location;
 
             try {
                 let { status } = await Location.requestForegroundPermissionsAsync();

@@ -27,3 +27,21 @@ export type BarResponse = {
     distance: number;
     images: ImagesResponse[];
 };
+
+export type User = {
+    id: number;
+    clerk_id?: string;
+    email: string;
+    username: string;
+    password: string;
+    isGoogleAccount: boolean;
+    role?: string;
+}
+
+export type CreateUser = {
+    clerk_id?: string;
+    email: string;
+    username: string;
+    password: string;
+    isGoogleAccount: boolean;
+}

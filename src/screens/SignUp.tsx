@@ -1,5 +1,6 @@
 import { User, Lock, ArrowRightIcon, Mail } from "lucide-react-native";
 import {
+    Alert,
     Image,
     StyleSheet,
     Text,
@@ -11,13 +12,17 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { MainStackParamList } from "../types/navigation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useSignUp } from "@clerk/clerk-expo";
+import { useOAuth, useSignUp, useUser } from "@clerk/clerk-expo";
 import { useState } from "react";
 import constants from "@app/constants/constants";
 import { Platform } from "react-native";
+import EmailVerificationComponent from "@app/components/authorizationComponents/EmailVerificationComponent";
+import { logInUserCall } from "@app/apiRequests/userCalls";
 
 const SignUp = () => {
     const { isLoaded, signUp, setActive } = useSignUp();
+    const { user } = useUser()
+
     const navigation =
         useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
@@ -25,7 +30,11 @@ const SignUp = () => {
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
     const [pendingVerification, setPendingVerification] = useState(false);
-    const [code, setCode] = useState("");
+    const [isGoogleAccount, setIsGoogleAccount] = useState(false);
+
+    const { startOAuthFlow } = useOAuth({
+        strategy: "oauth_google",
+    })
 
     const onSignUpPress = async () => {
         if (!isLoaded) return;
@@ -42,57 +51,90 @@ const SignUp = () => {
             });
 
             setPendingVerification(true);
-        } catch (err) {
-            console.error(JSON.stringify(err, null, 2));
-        }
-    };
+        } catch (err: any) {
+            for (const error of err.errors) {
+                // form_identifier_exists means that user already exists, so we do not create a new user
+                // if email is duplicate, we prompt user to sign in
+                if (error.code === 'form_identifier_exists'
+                    && error.meta?.formIdentifier === "email_address"
+                ) {
+                    Alert.alert(
+                        "User Exists",
+                        "An account with this email already exists. Please sign in instead.",
+                        [
+                            { text: "Sign In", onPress: () => handleLoginPage() },
+                            { text: "Cancel", style: "cancel" }
+                        ]
+                    );
+                    return;
+                    // if username is duplicate, we prompt user to enter another username
+                } else if (error.code === 'form_identifier_exists'
+                    && error.meta?.paramName === "username"
+                ) {
+                    Alert.alert(
+                        "Username Exists",
+                        "An account with this username already exists. Please sign in instead.",
+                        [
+                            { text: "Enter another username", onPress: () => setUserName("") },
+                            { text: "Cancel", style: "cancel" }
+                        ]
+                    );
+                    return;
+                }
 
-    const onVerifyPress = async () => {
-        if (!isLoaded) return;
+                console.error(JSON.stringify(err, null, 2));
+            }
+        };
+    }
 
+    const handleRegistrationViaGoogle = async () => {
         try {
-            const signUpAttempt = await signUp.attemptEmailAddressVerification({
-                code: code,
-            });
+            const { setActive, signIn } = await startOAuthFlow();
 
-            if (signUpAttempt.status === "complete") {
-                await setActive({ session: signUpAttempt.createdSessionId });
-                navigation.navigate("Home");
-            } else {
-                console.error(JSON.stringify(signUpAttempt, null, 2));
+            if (signIn && signIn.createdSessionId) {
+                // Set Clerk Session
+                await setActive?.({ session: signIn.createdSessionId })
+                navigation.replace("BottomNavigation");
+                return;
+            } else if (signUp && signUp.emailAddress && signUp.firstName && signUp.lastName) {
+                console.log('signUp ', signUp)
+                await signUp.create({
+                    emailAddress: signUp.emailAddress,
+                    username: signUp.firstName + '_' + signUp.lastName,
+                    password: "GOOGLE_ACCOUNT",
+                    strategy: "oauth_google",
+                    redirectUrl: "http://localhost:8081"
+                }).then(async () => {
+                    setIsGoogleAccount(true);
+                    await signUp.prepareEmailAddressVerification({
+                        strategy: "email_code",
+                    });
+
+                    setPendingVerification(true);
+                })
             }
         } catch (err) {
             console.error(JSON.stringify(err, null, 2));
         }
-    };
-
-    if (pendingVerification) {
-        return (
-            <View
-                style={{
-                    height: "100%",
-                    width: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                }}
-            >
-                <Text>Verify Your Email Address</Text>
-                <TextInput
-                    value={code}
-                    placeholder="Enter your verification code"
-                    onChangeText={(value) => setCode(value)}
-                />
-                <TouchableOpacity onPress={() => onVerifyPress()}>
-                    <Text>Verify</Text>
-                </TouchableOpacity>
-            </View>
-        );
     }
 
     const handleLoginPage = async () => {
         await AsyncStorage.setItem("@mapPlace", "true");
         navigation.replace("Login");
     };
+
+    if (pendingVerification) {
+        return (
+            <EmailVerificationComponent
+                isLoaded={isLoaded}
+                signUp={signUp}
+                setActive={setActive}
+                isGoogleAccount={isGoogleAccount}
+                password={password}
+                navigation={navigation}
+            />
+        );
+    }
 
     return (
         <View style={styles.container}>
@@ -158,7 +200,10 @@ const SignUp = () => {
                     </Text>
                 </View>
                 <View style={styles.googleLogoContainer}>
-                    <TouchableOpacity style={styles.googleLogoButton}>
+                    <TouchableOpacity
+                        style={styles.googleLogoButton}
+                        onPress={() => handleRegistrationViaGoogle()}
+                    >
                         <Image
                             source={Platform.select({
                                 ios: require('../images/googleIcon.png'),
@@ -187,8 +232,6 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
-
 const styles = StyleSheet.create({
     container: {
         backgroundColor: "#fff",
@@ -215,6 +258,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 15,
         height: 50,
+        borderWidth: 1,
+        borderColor: "grey",
     },
     textInput: {
         flex: 1,
@@ -292,3 +337,5 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
 });
+
+export default SignUp;

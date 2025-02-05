@@ -1,32 +1,40 @@
 import { MainStackParamList } from "@app/types/navigation";
-import { useAuth, useSignIn } from "@clerk/clerk-expo";
+import { useAuth, useOAuth, useSignIn, useUser } from "@clerk/clerk-expo";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
-import { ArrowRightIcon, Lock, User } from "lucide-react-native";
+import { ArrowRightIcon, Lock, Mail, User } from "lucide-react-native";
 import { useCallback, useState } from "react";
 import {
+    Image,
+    Platform,
     StyleSheet,
     Text,
     TextInput,
     TouchableOpacity,
     View,
 } from "react-native";
+import constants from "@app/constants/constants";
 
 const Login = () => {
     const { signIn, setActive, isLoaded } = useSignIn();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [username, setUsername] = useState("");
 
     const { isSignedIn } = useAuth();
 
     const navigation =
         useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
+    const { startOAuthFlow } = useOAuth({
+        strategy: 'oauth_google',
+    })
+
     if (isSignedIn) {
         navigation.navigate("BottomNavigation");
     }
-
+    // Manual Sign In
     const onSignInPress = useCallback(async () => {
         if (!isLoaded) return;
 
@@ -50,6 +58,26 @@ const Login = () => {
     const handleSignUpPage = () => {
         navigation.navigate("BottomNavigation", { screen: "SignUp" } as never);
     }
+    // Google Sign In
+    const handleLoginViaGoogle = async () => {
+        try {
+
+            const { createdSessionId, signIn, signUp } = await startOAuthFlow();
+
+            if (createdSessionId) {
+                setActive?.({ session: createdSessionId });
+                navigation.navigate("BottomNavigation");
+            } else if (signIn) {
+                await setActive?.({ session: signIn.createdSessionId });
+                navigation.navigate("BottomNavigation");
+            } else if (signUp) {
+                await setActive?.({ session: signUp.createdSessionId });
+                navigation.navigate("Login");
+            }
+        } catch (err) {
+            console.error('Error signing in:', err);
+        }
+    }
 
     return (
         <View style={styles.container}>
@@ -61,7 +89,7 @@ const Login = () => {
                     <Text style={styles.subtitle}>Sign in to your account</Text>
                 </View>
                 <View style={styles.inputContainer}>
-                    <User
+                    <Mail
                         size={24}
                         color={"#9A9A9A"}
                         style={styles.inputUserIcon}
@@ -72,6 +100,20 @@ const Login = () => {
                         autoCapitalize="none"
                         value={email}
                         onChangeText={(value) => setEmail(value)}
+                    />
+                </View>
+                <View style={styles.inputContainer}>
+                    <User
+                        size={24}
+                        color={"#9A9A9A"}
+                        style={styles.inputUserIcon}
+                    />
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Enter username"
+                        autoCapitalize="none"
+                        value={username}
+                        onChangeText={(value) => setUsername(value)}
                     />
                 </View>
                 <View style={styles.inputContainer}>
@@ -102,6 +144,29 @@ const Login = () => {
                         <View style={styles.arrowContainer}>
                             <ArrowRightIcon size={24} color={"#fff"} />
                         </View>
+                    </TouchableOpacity>
+                </View>
+                <View>
+                    <Text style={styles.differentOptionsText}>
+                        Or login using the following
+                    </Text>
+                </View>
+                <View style={styles.googleLogoContainer}>
+                    <TouchableOpacity
+                        style={styles.googleLogoButton}
+                        onPress={() => handleLoginViaGoogle()}
+                    >
+                        <Image
+                            source={Platform.select({
+                                ios: require('../images/googleIcon.png'),
+                                android: require('../images/googleIcon.png'),
+                            })}
+                            resizeMode="contain"
+                            style={styles.googleLogo}
+                            onError={(error) => {
+                                console.log("Error loading image:", error);
+                            }}
+                        />
                     </TouchableOpacity>
                 </View>
                 {/* Redirect to SignUp Button */}
@@ -161,6 +226,8 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 15,
         height: 50,
+        borderWidth: 1,
+        borderColor: "grey",
     },
     textInput: {
         flex: 1,
@@ -184,11 +251,11 @@ const styles = StyleSheet.create({
         width: "90%",
         justifyContent: "flex-end",
         gap: 10,
-        marginTop: 50,
+        paddingVertical: 35,
     },
     signInButton: {
         flexDirection: "row",
-        gap: 10,
+        gap: 8,
     },
     linearGradient: {
         height: 34,
@@ -197,6 +264,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         marginHorizontal: 10,
+        padding: 4,
     },
     footerText: {
         color: "#000",
@@ -218,5 +286,27 @@ const styles = StyleSheet.create({
         width: "100%",
         height: "auto",
         justifyContent: "center",
+    },
+    differentOptionsText: {
+        fontSize: 18,
+        color: "#000",
+        alignSelf: "center",
+    },
+    googleLogoContainer: {
+        alignItems: "center",
+        paddingVertical: 15,
+    },
+    googleLogoButton: {
+        width: constants.GOOGLE_LOGO_SHAPE,
+        height: constants.GOOGLE_LOGO_SHAPE,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    googleLogo: {
+        width: constants.GOOGLE_LOGO_SHAPE,
+        height: constants.GOOGLE_LOGO_SHAPE,
+        resizeMode: "contain",
+        borderRadius: 100,
+        alignSelf: "center",
     },
 });

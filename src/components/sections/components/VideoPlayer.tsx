@@ -25,7 +25,6 @@ const VideoPlayer = () => {
         if (isPlaying) {
             video.current?.pauseAsync();
             setIsPlaying(false);
-            // setIsShowPause(true);
         } else {
             video.current?.playAsync();
             setIsPlaying(true);
