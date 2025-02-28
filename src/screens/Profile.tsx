@@ -4,6 +4,7 @@ import { useAuth, useUser } from "@clerk/clerk-expo"
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MainStackParamList } from "@app/types/navigation"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 
 const Profile = () => {
 
@@ -14,6 +15,8 @@ const Profile = () => {
 
     const handleSignOut = async () => {
         await signOut();
+        // Clear the storage after log out
+        await AsyncStorage.clear()
 
         navigation.navigate("BottomNavigation")
     }

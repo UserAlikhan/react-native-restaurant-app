@@ -1,6 +1,5 @@
 import { User, Lock, ArrowRightIcon, Mail } from "lucide-react-native";
 import {
-    Alert,
     Image,
     StyleSheet,
     Text,
@@ -12,16 +11,17 @@ import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { MainStackParamList } from "../types/navigation";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useOAuth, useSignUp, useUser } from "@clerk/clerk-expo";
+import { useSignUp } from "@clerk/clerk-expo";
 import { useState } from "react";
 import constants from "@app/constants/constants";
 import { Platform } from "react-native";
 import EmailVerificationComponent from "@app/components/authorizationComponents/EmailVerificationComponent";
-import { logInUserCall } from "@app/apiRequests/userCalls";
+import { useGoogleAuth } from "@app/customHooks/useGoogleAuth";
+import AccountWithThisEmailExistsAlert from "@app/components/alerts/accountWithThisEmailExists";
+import UsernameExistsAlert from "@app/components/alerts/usernameExistsAlert";
 
 const SignUp = () => {
     const { isLoaded, signUp, setActive } = useSignUp();
-    const { user } = useUser()
 
     const navigation =
         useNavigation<NativeStackNavigationProp<MainStackParamList>>();
@@ -29,12 +29,9 @@ const SignUp = () => {
     const [email, setEmail] = useState("");
     const [userName, setUserName] = useState("");
     const [password, setPassword] = useState("");
-    const [pendingVerification, setPendingVerification] = useState(false);
-    const [isGoogleAccount, setIsGoogleAccount] = useState(false);
+    const [pendingManualVerification, setPendingManualVerification] = useState(false);
 
-    const { startOAuthFlow } = useOAuth({
-        strategy: "oauth_google",
-    })
+    const { handleGoogleAuth, pendingVerification, isGoogleAccount } = useGoogleAuth(navigation);
 
     const onSignUpPress = async () => {
         if (!isLoaded) return;
@@ -50,7 +47,7 @@ const SignUp = () => {
                 strategy: "email_code",
             });
 
-            setPendingVerification(true);
+            setPendingManualVerification(true);
         } catch (err: any) {
             for (const error of err.errors) {
                 // form_identifier_exists means that user already exists, so we do not create a new user
@@ -58,27 +55,13 @@ const SignUp = () => {
                 if (error.code === 'form_identifier_exists'
                     && error.meta?.formIdentifier === "email_address"
                 ) {
-                    Alert.alert(
-                        "User Exists",
-                        "An account with this email already exists. Please sign in instead.",
-                        [
-                            { text: "Sign In", onPress: () => handleLoginPage() },
-                            { text: "Cancel", style: "cancel" }
-                        ]
-                    );
+                    AccountWithThisEmailExistsAlert({ handleLoginPage })
                     return;
                     // if username is duplicate, we prompt user to enter another username
                 } else if (error.code === 'form_identifier_exists'
                     && error.meta?.paramName === "username"
                 ) {
-                    Alert.alert(
-                        "Username Exists",
-                        "An account with this username already exists. Please sign in instead.",
-                        [
-                            { text: "Enter another username", onPress: () => setUserName("") },
-                            { text: "Cancel", style: "cancel" }
-                        ]
-                    );
+                    UsernameExistsAlert({ setUserName })
                     return;
                 }
 
@@ -87,43 +70,13 @@ const SignUp = () => {
         };
     }
 
-    const handleRegistrationViaGoogle = async () => {
-        try {
-            const { setActive, signIn } = await startOAuthFlow();
-
-            if (signIn && signIn.createdSessionId) {
-                // Set Clerk Session
-                await setActive?.({ session: signIn.createdSessionId })
-                navigation.replace("BottomNavigation");
-                return;
-            } else if (signUp && signUp.emailAddress && signUp.firstName && signUp.lastName) {
-                console.log('signUp ', signUp)
-                await signUp.create({
-                    emailAddress: signUp.emailAddress,
-                    username: signUp.firstName + '_' + signUp.lastName,
-                    password: "GOOGLE_ACCOUNT",
-                    strategy: "oauth_google",
-                    redirectUrl: "http://localhost:8081"
-                }).then(async () => {
-                    setIsGoogleAccount(true);
-                    await signUp.prepareEmailAddressVerification({
-                        strategy: "email_code",
-                    });
-
-                    setPendingVerification(true);
-                })
-            }
-        } catch (err) {
-            console.error(JSON.stringify(err, null, 2));
-        }
-    }
-
     const handleLoginPage = async () => {
         await AsyncStorage.setItem("@mapPlace", "true");
         navigation.replace("Login");
     };
 
-    if (pendingVerification) {
+    if (pendingVerification || pendingManualVerification) {
+        // Email verification screen, verification code is sent to the user's email
         return (
             <EmailVerificationComponent
                 isLoaded={isLoaded}
@@ -202,7 +155,7 @@ const SignUp = () => {
                 <View style={styles.googleLogoContainer}>
                     <TouchableOpacity
                         style={styles.googleLogoButton}
-                        onPress={() => handleRegistrationViaGoogle()}
+                        onPress={() => handleGoogleAuth()}
                     >
                         <Image
                             source={Platform.select({

@@ -1,5 +1,5 @@
 import { MainStackParamList } from "@app/types/navigation";
-import { useAuth, useOAuth, useSignIn, useUser } from "@clerk/clerk-expo";
+import { useAuth, useSignIn, useSignUp } from "@clerk/clerk-expo";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useNavigation } from "@react-navigation/native";
 import { ArrowRightIcon, Lock, Mail, User } from "lucide-react-native";
@@ -14,9 +14,12 @@ import {
     View,
 } from "react-native";
 import constants from "@app/constants/constants";
+import EmailVerificationComponent from "@app/components/authorizationComponents/EmailVerificationComponent";
+import { useGoogleAuth } from "@app/customHooks/useGoogleAuth";
 
 const Login = () => {
     const { signIn, setActive, isLoaded } = useSignIn();
+    const { signUp } = useSignUp();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -27,9 +30,8 @@ const Login = () => {
     const navigation =
         useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
-    const { startOAuthFlow } = useOAuth({
-        strategy: 'oauth_google',
-    })
+    // custom hook for google auth
+    const { handleGoogleAuth, pendingVerification, isGoogleAccount } = useGoogleAuth(navigation);
 
     if (isSignedIn) {
         navigation.navigate("BottomNavigation");
@@ -46,7 +48,7 @@ const Login = () => {
 
             if (signInAttempt.status == "complete") {
                 await setActive({ session: signInAttempt.createdSessionId });
-                navigation.navigate("Profile");
+                navigation.navigate("BottomNavigation");
             } else {
                 console.error(JSON.stringify(signInAttempt, null, 2));
             }
@@ -58,25 +60,18 @@ const Login = () => {
     const handleSignUpPage = () => {
         navigation.navigate("BottomNavigation", { screen: "SignUp" } as never);
     }
-    // Google Sign In
-    const handleLoginViaGoogle = async () => {
-        try {
 
-            const { createdSessionId, signIn, signUp } = await startOAuthFlow();
-
-            if (createdSessionId) {
-                setActive?.({ session: createdSessionId });
-                navigation.navigate("BottomNavigation");
-            } else if (signIn) {
-                await setActive?.({ session: signIn.createdSessionId });
-                navigation.navigate("BottomNavigation");
-            } else if (signUp) {
-                await setActive?.({ session: signUp.createdSessionId });
-                navigation.navigate("Login");
-            }
-        } catch (err) {
-            console.error('Error signing in:', err);
-        }
+    if (pendingVerification) {
+        return (
+            <EmailVerificationComponent
+                isLoaded={isLoaded}
+                signUp={signUp}
+                setActive={setActive}
+                isGoogleAccount={isGoogleAccount}
+                password={password}
+                navigation={navigation}
+            />
+        );
     }
 
     return (
@@ -154,7 +149,7 @@ const Login = () => {
                 <View style={styles.googleLogoContainer}>
                     <TouchableOpacity
                         style={styles.googleLogoButton}
-                        onPress={() => handleLoginViaGoogle()}
+                        onPress={() => handleGoogleAuth()}
                     >
                         <Image
                             source={Platform.select({

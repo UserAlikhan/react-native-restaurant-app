@@ -1,16 +1,42 @@
+import { addToFavorites, removeFromFavorites } from "@app/apiRequests/favoritesCalls"
 import { BarResponse } from "@app/types/apiResponseTypes"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import { Star } from "lucide-react-native"
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native"
+import { jwtDecode } from 'jwt-decode'
+import isTokenValid from "@app/helper/isTokenValid"
+import { useAppDispatch, useAppSelector } from "@app/store/hooks"
+import { addFavoriteBar, removeFavoriteBar } from "@app/store/slices/favoritesSlice"
 
 type Props = {
     bar: BarResponse
 }
 
 const AllBarsCard = ({ bar }: Props) => {
+    const dispatch = useAppDispatch()
+    const { favoritesIds } = useAppSelector(state => state.favorites)
 
-    const handleAddToFavorites = (id: number) => {
-        // addToFavorites(id)
+    const handleAddToFavorites = async (bar_id: number) => {
+        const jwtToken = await AsyncStorage.getItem('jwtToken')
+
+        if (jwtToken && isTokenValid(jwtToken)) {
+            const decodedToken = jwtDecode(jwtToken)
+
+            try {
+                if (!favoritesIds.includes(bar_id)) {
+                    dispatch(addFavoriteBar(bar))
+                    await addToFavorites(Number(decodedToken.sub), bar_id, jwtToken)
+                } else {
+                    dispatch(removeFavoriteBar(bar_id))
+                    await removeFromFavorites(Number(decodedToken.sub), bar_id, jwtToken)
+                }
+            } catch (error) {
+                console.error('Error updating favorites:', error)
+            }
+        }
     }
+
+    console.log('Current favoritesIds:', favoritesIds)
 
     return (
         <View style={styles.container}>
@@ -34,7 +60,10 @@ const AllBarsCard = ({ bar }: Props) => {
                 </View>
             </View>
             <TouchableOpacity onPress={() => handleAddToFavorites(bar.id)}>
-                <Star size={24} color="#FFD700" />
+                {favoritesIds.find(id => id === bar.id)
+                    ? <Star size={24} color="#FFD700" fill={'gold'} />
+                    : <Star size={24} color="#FFD700" fill={'white'} />
+                }
             </TouchableOpacity>
         </View>
     )

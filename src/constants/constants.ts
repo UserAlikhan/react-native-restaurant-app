@@ -48,7 +48,7 @@ const CARD_BORDER_RADIUS = 35;
 
 const GOOGLE_LOGO_SHAPE = 40;
 
-const API_URL = "https://server.vibe-view.com";
+const API_URL = "https://server.vibe-view.it.com";
 
 const BOTTOM_NAVIGATION_HEIGHT = Platform.OS === "ios" ? 70 : 50;
 

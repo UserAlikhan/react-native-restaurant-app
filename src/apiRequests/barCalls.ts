@@ -73,8 +73,3 @@ export const getAllBars = async (): Promise<BarResponse[]> => {
         throw error;
     }
 };
-
-export const addToFavorites = async (id: number): Promise<void> => {
-    try {
-    } catch (error) { }
-};

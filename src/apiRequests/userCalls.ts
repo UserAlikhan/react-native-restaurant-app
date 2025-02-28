@@ -1,5 +1,5 @@
 import constants from "@app/constants/constants";
-import { CreateUser, User } from "@app/types/apiResponseTypes";
+import { CreateUser } from "@app/types/apiResponseTypes";
 import axios from "axios";
 
 type LoginUser = {

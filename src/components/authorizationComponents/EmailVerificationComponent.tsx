@@ -5,7 +5,6 @@ import { SignUpResource, SetActive } from "@clerk/types";
 import { MainStackParamList } from "@app/types/navigation";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createUser, logInUserCall } from "@app/apiRequests/userCalls";
-import { User } from "@app/types/apiResponseTypes";
 
 type Props = {
     isLoaded: boolean;
@@ -32,7 +31,7 @@ const EmailVerificationComponent = ({ isLoaded, signUp, setActive, isGoogleAccou
                 await setActive({ session: signUpAttempt.createdSessionId });
                 // create and login user in the database
                 await createAndLoginUser(signUpAttempt);
-                navigation.navigate("Home");
+                navigation.navigate("BottomNavigation");
             } else {
                 console.error(JSON.stringify(signUpAttempt, null, 2));
             }

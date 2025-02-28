@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import MapView, { PROVIDER_GOOGLE, Region } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, PROVIDER_DEFAULT, Region } from "react-native-maps";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import MarkerComponent from "@app/components/mapComponents/MarkerComponent";
 import constants from "@app/constants/constants";
@@ -76,7 +76,7 @@ const MapComponent = () => {
             />
             <MapView
                 style={styles.map}
-                provider={PROVIDER_GOOGLE}
+                provider={PROVIDER_DEFAULT}
                 initialRegion={constants.INITIAL_REGION}
                 userInterfaceStyle="light"
                 showsUserLocation={true}
