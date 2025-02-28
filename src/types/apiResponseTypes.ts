@@ -28,6 +28,10 @@ export type BarResponse = {
     images: ImagesResponse[];
 };
 
+export type FavoriteBarResponse = {
+    bar: BarResponse;
+}
+
 export type User = {
     id: number;
     clerk_id?: string;

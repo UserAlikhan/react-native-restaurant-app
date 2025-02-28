@@ -7,6 +7,10 @@ import { jwtDecode } from 'jwt-decode'
 import isTokenValid from "@app/helper/isTokenValid"
 import { useAppDispatch, useAppSelector } from "@app/store/hooks"
 import { addFavoriteBar, removeFavoriteBar } from "@app/store/slices/favoritesSlice"
+import { useNavigation } from "@react-navigation/native"
+import { MainStackParamList } from "@app/types/navigation"
+import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import signUpFirstAlert from "../alerts/signUpFirstAlert"
 
 type Props = {
     bar: BarResponse
@@ -15,6 +19,8 @@ type Props = {
 const AllBarsCard = ({ bar }: Props) => {
     const dispatch = useAppDispatch()
     const { favoritesIds } = useAppSelector(state => state.favorites)
+
+    const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
     const handleAddToFavorites = async (bar_id: number) => {
         const jwtToken = await AsyncStorage.getItem('jwtToken')
@@ -33,6 +39,8 @@ const AllBarsCard = ({ bar }: Props) => {
             } catch (error) {
                 console.error('Error updating favorites:', error)
             }
+        } else if (!jwtToken) {
+            signUpFirstAlert({ handleSignUpPage: () => { navigation.replace('BottomNavigation', { screen: 'SignUp' } as never) } })
         }
     }
 

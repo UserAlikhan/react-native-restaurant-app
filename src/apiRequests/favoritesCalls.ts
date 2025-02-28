@@ -1,6 +1,6 @@
 import axios from "axios";
 import constants from "@app/constants/constants";
-import { BarResponse } from "@app/types/apiResponseTypes";
+import { BarResponse, FavoriteBarResponse } from "@app/types/apiResponseTypes";
 
 export const addToFavorites = async (user_id: number, bar_id: number, token: string): Promise<BarResponse> => {
     try {
@@ -39,7 +39,7 @@ export const getUserFavoritesIds = async (user_id: number, token: string): Promi
     }
 }
 
-export const getUserFavoriteBars = async (user_id: number, token: string): Promise<BarResponse[]> => {
+export const getUserFavoriteBars = async (user_id: number, token: string): Promise<FavoriteBarResponse[]> => {
     try {
         // execute getUserFavorites
         const response = await axios.get(`${constants.API_URL}/favorites/user/${user_id}`, {

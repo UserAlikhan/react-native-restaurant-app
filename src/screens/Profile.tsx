@@ -5,11 +5,17 @@ import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MainStackParamList } from "@app/types/navigation"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { clearFavorites } from "@app/store/slices/favoritesSlice"
+import { useAppDispatch, useAppSelector } from "@app/store/hooks"
+import FavoriteBarsCardForProfilePage from "@app/components/ui/favoriteBarsCardForProfilePage"
+import checkJwtTokenAndRetrieveFavorites from "@app/helper/checkJwtTokenAndRetrieveFavorites"
 
 const Profile = () => {
 
     const { signOut } = useAuth()
     const { user } = useUser();
+
+    const dispatch = useAppDispatch()
 
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>()
 
@@ -17,9 +23,16 @@ const Profile = () => {
         await signOut();
         // Clear the storage after log out
         await AsyncStorage.clear()
+        // Clear the favorites
+        dispatch(clearFavorites())
 
         navigation.navigate("BottomNavigation")
     }
+
+    const { favoritesBars } = useAppSelector(state => state.favorites)
+    // useEffect(() => {
+    //     checkJwtTokenAndRetrieveFavorites(dispatch)
+    // }, [])
 
     return (
         <ScrollView style={styles.container}>
@@ -34,18 +47,10 @@ const Profile = () => {
 
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>My Favorites</Text>
-                {/* Placeholder for favorites - replace with actual FlatList/map of favorites */}
-                <View style={styles.favoriteItem}>
-                    <Image
-                        source={{ uri: 'https://via.placeholder.com/60' }}
-                        style={styles.restaurantImage}
-                    />
-                    <View style={styles.favoriteInfo}>
-                        <Text style={styles.restaurantName}>PDT (Please Don't Tell Me)</Text>
-                        <Text style={styles.cuisine}>Italian • $$</Text>
-                    </View>
-                    <MaterialIcons name="favorite" size={24} color="#FF4444" />
-                </View>
+                {favoritesBars.map(bar => (
+                    // Call favorite bar card
+                    <FavoriteBarsCardForProfilePage key={bar.bar.id} bar={bar.bar} />
+                ))}
             </View>
 
             <TouchableOpacity style={styles.logoutButton} onPress={() => {
@@ -93,40 +98,6 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 15,
-    },
-    favoriteItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        padding: 12,
-        borderRadius: 12,
-        marginBottom: 10,
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 3,
-    },
-    restaurantImage: {
-        width: 60,
-        height: 60,
-        borderRadius: 8,
-    },
-    favoriteInfo: {
-        flex: 1,
-        marginLeft: 12,
-    },
-    restaurantName: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
-    cuisine: {
-        fontSize: 14,
-        color: '#666',
-        marginTop: 4,
     },
     logoutButton: {
         backgroundColor: '#FF4444',

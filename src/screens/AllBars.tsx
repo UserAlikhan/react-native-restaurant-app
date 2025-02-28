@@ -2,23 +2,18 @@ import ArrowHeaderTemplate from "@app/components/templates/ArrowHeaderTemplate"
 import { ScrollView, StyleSheet, Text, View } from "react-native"
 import AllBarsCard from "@app/components/ui/allbarsCard"
 import { useGetFromStoreOrRetrieveAllBarsHook } from "@app/customHooks/useGetFromStoreOrRetrieveAllBarsHook";
-import useGetFavoriteBarsFromStoreOrRetrieveHook from "@app/customHooks/useGetFavoriteBarsFromStoreOrRetrieveHook";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import isTokenValid from "@app/helper/isTokenValid";
-import { jwtDecode } from "jwt-decode";
 import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import checkJwtTokenAndRetrieveFavorites from "@app/helper/checkJwtTokenAndRetrieveFavorites";
 
 const AllBars = () => {
+
+    const dispatch = useAppDispatch()
     const { bars } = useGetFromStoreOrRetrieveAllBarsHook();
+    const { favoritesIds } = useAppSelector(state => state.favorites)
 
     useEffect(() => {
-        const checkJwtToken = async () => {
-            const jwtToken = await AsyncStorage.getItem('jwtToken')
-            if (jwtToken && isTokenValid(jwtToken)) {
-                useGetFavoriteBarsFromStoreOrRetrieveHook({ user_id: Number(jwtDecode(jwtToken).sub), token: jwtToken });
-            }
-        }
-        checkJwtToken()
+        checkJwtTokenAndRetrieveFavorites(dispatch, favoritesIds)
     }, [])
 
     return (

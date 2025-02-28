@@ -8,19 +8,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logInUserCall } from "@app/apiRequests/userCalls";
 import { useEffect } from "react";
 import isTokenValid from "@app/helper/isTokenValid";
-import { jwtDecode } from "jwt-decode";
-import { getUserFavoriteBars, getUserFavoritesIds } from "@app/apiRequests/favoritesCalls";
-import { useAppDispatch } from "@app/store/hooks";
-import { setFavoritesIds, setFavoritesBars } from "@app/store/slices/favoritesSlice";
+import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import checkJwtTokenAndRetrieveFavorites from "@app/helper/checkJwtTokenAndRetrieveFavorites";
 
 export default function Home() {
     const dispatch = useAppDispatch()
     const { location } = useGetLocationHook();
     const { user } = useUser()
-    console.log('location ', location)
-    // function to check if jwt token exists in async storage
+    const { favoritesIds } = useAppSelector(state => state.favorites)
+    // assign jwt token to AsyncStorage
     useEffect(() => {
-
         const checkJwtToken = async () => {
             const jwtToken = await AsyncStorage.getItem('jwtToken')
 
@@ -37,15 +34,14 @@ export default function Home() {
                 if (token) {
                     await AsyncStorage.setItem('jwtToken', String(token.access_token))
                 }
-            } else if (jwtToken && isTokenValid(jwtToken)) {
-                const decodedToken = jwtDecode(jwtToken)
-                const favoritesIds = await getUserFavoritesIds(Number(decodedToken.sub), jwtToken)
-                const favoritesBars = await getUserFavoriteBars(Number(decodedToken.sub), jwtToken)
-                dispatch(setFavoritesIds(favoritesIds))
-                dispatch(setFavoritesBars(favoritesBars))
             }
         }
+
         checkJwtToken()
+    }, [])
+    // check if jwt token is valid and retrieve favorites
+    useEffect(() => {
+        checkJwtTokenAndRetrieveFavorites(dispatch, favoritesIds)
     }, [])
 
     return (

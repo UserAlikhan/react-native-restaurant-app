@@ -5,6 +5,7 @@ import { useSelector } from "react-redux"
 import { getUserFavoriteBars, getUserFavoritesIds } from "@app/apiRequests/favoritesCalls"
 import { setFavoritesIds } from "@app/store/slices/favoritesSlice"
 import { setFavoritesBars } from "@app/store/slices/favoritesSlice"
+import isTokenValid from "@app/helper/isTokenValid"
 
 const useGetFavoriteBarsFromStoreOrRetrieveHook = ({ user_id, token }: { user_id: number, token: string }) => {
     const [isLoading, setIsLoading] = useState(false);
@@ -13,9 +14,9 @@ const useGetFavoriteBarsFromStoreOrRetrieveHook = ({ user_id, token }: { user_id
     const dispatch = useAppDispatch()
     const favoritesIds = useSelector((state: RootState) => state.favorites.favoritesIds)
     const favoritesBars = useSelector((state: RootState) => state.favorites.favoritesBars)
-
+    console.log('HOOK favoritesIds', favoritesIds)
     useEffect(() => {
-        if (favoritesIds.length === 0) {
+        if (favoritesIds.length === 0 && isTokenValid(token)) {
             const retrieveFavorites = async () => {
                 setIsLoading(true)
                 try {
@@ -29,6 +30,7 @@ const useGetFavoriteBarsFromStoreOrRetrieveHook = ({ user_id, token }: { user_id
                     setIsLoading(false)
                 }
             }
+
             retrieveFavorites()
         }
     }, [])
