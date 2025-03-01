@@ -8,14 +8,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { logInUserCall } from "@app/apiRequests/userCalls";
 import { useEffect } from "react";
 import isTokenValid from "@app/helper/isTokenValid";
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
-import checkJwtTokenAndRetrieveFavorites from "@app/helper/checkJwtTokenAndRetrieveFavorites";
+import { useAppDispatch } from "@app/store/hooks";
 
 export default function Home() {
     const dispatch = useAppDispatch()
     const { location } = useGetLocationHook();
     const { user } = useUser()
-    const { favoritesIds } = useAppSelector(state => state.favorites)
+
     // assign jwt token to AsyncStorage
     useEffect(() => {
         const checkJwtToken = async () => {
@@ -38,10 +37,6 @@ export default function Home() {
         }
 
         checkJwtToken()
-    }, [])
-    // check if jwt token is valid and retrieve favorites
-    useEffect(() => {
-        checkJwtTokenAndRetrieveFavorites(dispatch, favoritesIds)
     }, [])
 
     return (

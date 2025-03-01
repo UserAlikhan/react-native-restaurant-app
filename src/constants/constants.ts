@@ -52,6 +52,10 @@ const API_URL = "https://server.vibe-view.it.com";
 
 const BOTTOM_NAVIGATION_HEIGHT = Platform.OS === "ios" ? 70 : 50;
 
+const PROFILE_IMAGE_SIZE = 85;
+
+const SLICE_FAVORITES_NUMBER = 4;
+
 export default {
     TAB_SECTION_HEIGHT,
     HEADER_HEIGHT,
@@ -75,4 +79,6 @@ export default {
     GOOGLE_LOGO_SHAPE,
     API_URL,
     BOTTOM_NAVIGATION_HEIGHT,
+    PROFILE_IMAGE_SIZE,
+    SLICE_FAVORITES_NUMBER,
 };

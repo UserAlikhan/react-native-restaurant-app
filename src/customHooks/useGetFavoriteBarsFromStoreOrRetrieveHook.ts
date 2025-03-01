@@ -2,12 +2,9 @@ import { useAppDispatch } from "@app/store/hooks"
 import { useEffect, useState } from "react"
 import { RootState } from "@app/store/store"
 import { useSelector } from "react-redux"
-import { getUserFavoriteBars, getUserFavoritesIds } from "@app/apiRequests/favoritesCalls"
-import { setFavoritesIds } from "@app/store/slices/favoritesSlice"
-import { setFavoritesBars } from "@app/store/slices/favoritesSlice"
-import isTokenValid from "@app/helper/isTokenValid"
+import checkJwtTokenAndRetrieveFavorites from "@app/helper/checkJwtTokenAndRetrieveFavorites"
 
-const useGetFavoriteBarsFromStoreOrRetrieveHook = ({ user_id, token }: { user_id: number, token: string }) => {
+const useGetFavoriteBarsFromStoreOrRetrieveHook = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -15,23 +12,17 @@ const useGetFavoriteBarsFromStoreOrRetrieveHook = ({ user_id, token }: { user_id
     const favoritesIds = useSelector((state: RootState) => state.favorites.favoritesIds)
     const favoritesBars = useSelector((state: RootState) => state.favorites.favoritesBars)
     console.log('HOOK favoritesIds', favoritesIds)
-    useEffect(() => {
-        if (favoritesIds.length === 0 && isTokenValid(token)) {
-            const retrieveFavorites = async () => {
-                setIsLoading(true)
-                try {
-                    const favoritesIdsRetrieved = await getUserFavoritesIds(user_id, token)
-                    const favoritesBarsRetrieved = await getUserFavoriteBars(user_id, token)
-                    dispatch(setFavoritesIds(favoritesIdsRetrieved))
-                    dispatch(setFavoritesBars(favoritesBarsRetrieved))
-                } catch (error) {
-                    setError(error instanceof Error ? error.message : 'Failed to fetch favorites')
-                } finally {
-                    setIsLoading(false)
-                }
-            }
 
-            retrieveFavorites()
+    useEffect(() => {
+        if (favoritesIds.length === 0) {
+            setIsLoading(true)
+            try {
+                checkJwtTokenAndRetrieveFavorites(dispatch, favoritesIds)
+            } catch (error) {
+                setError(error instanceof Error ? error.message : 'Failed to fetch favorites')
+            } finally {
+                setIsLoading(false)
+            }
         }
     }, [])
 

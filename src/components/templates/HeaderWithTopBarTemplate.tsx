@@ -14,8 +14,9 @@ const HeaderWithTopBarTemplate = ({ currentPage, children, handleTabPress }: Pro
     return (
         <View style={styles.container}>
             <ArrowHeader />
-            <ScrollTabComponent currentPage={currentPage} handleTabPress={handleTabPress}/>
-            
+            {/* Live - Info - Location */}
+            <ScrollTabComponent currentPage={currentPage} handleTabPress={handleTabPress} />
+
             <View style={styles.content}>
                 {children}
             </View>
@@ -30,7 +31,7 @@ const styles = StyleSheet.create({
         flex: 1
     },
     content: {
-        flex: 1,    
+        flex: 1,
         backgroundColor: '#d8d8d8',
     }
 })

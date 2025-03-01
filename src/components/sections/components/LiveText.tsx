@@ -6,18 +6,11 @@ import { useAppSelector } from "@app/store/hooks";
 
 const LiveText = () => {
     const fadeAnim = useRef(new Animated.Value(1)).current;
-
     const { selectedBar } = useAppSelector((state) => state.selectedBar);
 
-    if (!selectedBar) {
-        return (
-            <View>
-                <Text style={styles.noData}>NO DATA</Text>
-            </View>
-        );
-    }
-
     useEffect(() => {
+        if (!selectedBar) return;
+
         const fadeInOut = () => {
             Animated.sequence([
                 Animated.timing(fadeAnim, {
@@ -35,6 +28,14 @@ const LiveText = () => {
 
         fadeInOut();
     }, [fadeAnim]);
+
+    if (!selectedBar) {
+        return (
+            <View>
+                <Text style={styles.noData}>NO DATA</Text>
+            </View>
+        );
+    }
 
     return (
         <View style={styles.textContainer}>

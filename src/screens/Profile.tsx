@@ -1,23 +1,31 @@
-import { Text, View, Image, StyleSheet, TouchableOpacity, ScrollView } from "react-native"
-import { MaterialIcons } from '@expo/vector-icons'
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from "react-native"
 import { useAuth, useUser } from "@clerk/clerk-expo"
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MainStackParamList } from "@app/types/navigation"
 import AsyncStorage from "@react-native-async-storage/async-storage"
 import { clearFavorites } from "@app/store/slices/favoritesSlice"
-import { useAppDispatch, useAppSelector } from "@app/store/hooks"
-import FavoriteBarsCardForProfilePage from "@app/components/ui/favoriteBarsCardForProfilePage"
-import checkJwtTokenAndRetrieveFavorites from "@app/helper/checkJwtTokenAndRetrieveFavorites"
+import { useAppDispatch } from "@app/store/hooks"
+import FavoriteBarsCardForProfilePage from "@app/components/ui/FavoriteBarsCardForProfilePage"
+import useGetFavoriteBarsFromStoreOrRetrieveHook from "@app/customHooks/useGetFavoriteBarsFromStoreOrRetrieveHook"
+import ProfileImage from "@app/components/ui/ProfileImage"
+import SingOutButton from "@app/components/ui/SingOutButton"
+import constants from "@app/constants/constants"
+import { useState } from "react"
 
 const Profile = () => {
 
     const { signOut } = useAuth()
     const { user } = useUser();
 
+    const { isLoading, error, favoritesBars } = useGetFavoriteBarsFromStoreOrRetrieveHook()
+
     const dispatch = useAppDispatch()
 
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>()
+
+    const [showAllFavorites, setShowAllFavorites] = useState(false)
+    const displayedFavorites = showAllFavorites ? favoritesBars : favoritesBars.slice(0, constants.SLICE_FAVORITES_NUMBER)
 
     const handleSignOut = async () => {
         await signOut();
@@ -29,36 +37,35 @@ const Profile = () => {
         navigation.navigate("BottomNavigation")
     }
 
-    const { favoritesBars } = useAppSelector(state => state.favorites)
-    // useEffect(() => {
-    //     checkJwtTokenAndRetrieveFavorites(dispatch)
-    // }, [])
-
     return (
         <ScrollView style={styles.container}>
-            <View style={styles.header}>
-                {/* <Image
-                    source={{ uri: 'https://via.placeholder.com/150' }}
-                    style={styles.profileImage}
-                /> */}
-                <Text style={styles.name}>{user?.username}</Text>
-                <Text style={styles.email}>{user?.emailAddresses[0].emailAddress}</Text>
-            </View>
+            <View style={styles.contentWrapper}>
+                <View style={styles.header}>
+                    <ProfileImage size={constants.PROFILE_IMAGE_SIZE} />
+                    <View style={styles.userInfo}>
+                        <Text style={styles.name}>{user?.username}</Text>
+                        <Text style={styles.email}>{user?.emailAddresses[0].emailAddress}</Text>
+                    </View>
+                </View>
 
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>My Favorites</Text>
-                {favoritesBars.map(bar => (
-                    // Call favorite bar card
-                    <FavoriteBarsCardForProfilePage key={bar.bar.id} bar={bar.bar} />
-                ))}
-            </View>
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>My Favorites</Text>
+                    {!isLoading && displayedFavorites.map(bar => (
+                        // Call favorite bar card
+                        <FavoriteBarsCardForProfilePage key={bar.bar.id} bar={bar.bar} />
+                    ))}
 
-            <TouchableOpacity style={styles.logoutButton} onPress={() => {
-                handleSignOut()
-            }}>
-                <MaterialIcons name="logout" size={24} color="#fff" />
-                <Text style={styles.logoutButtonText}>Logout</Text>
-            </TouchableOpacity>
+                    {!isLoading && favoritesBars.length > constants.SLICE_FAVORITES_NUMBER && (
+                        <TouchableOpacity style={styles.showAllButton} onPress={() => setShowAllFavorites(!showAllFavorites)}>
+                            <Text style={styles.showAllText}>
+                                {showAllFavorites ? "Show Less" : "Show All"}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
+                </View>
+                {!showAllFavorites && <View style={styles.spacer} />}
+                <SingOutButton handleSignOut={handleSignOut} />
+            </View>
         </ScrollView>
     )
 }
@@ -66,21 +73,26 @@ const Profile = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        height: "100%",
         backgroundColor: '#fff',
     },
+    contentWrapper: {
+        minHeight: "100%",
+        flexDirection: 'column',
+    },
     header: {
-        marginTop: 70,
+        flexDirection: 'column',
+        marginTop: 75,
         alignItems: 'center',
-        padding: 20,
+        paddingHorizontal: 20,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
     },
-    profileImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
-        marginBottom: 15,
+    userInfo: {
+        paddingVertical: 15,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     name: {
         fontSize: 22,
@@ -99,21 +111,18 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginBottom: 15,
     },
-    logoutButton: {
-        backgroundColor: '#FF4444',
-        flexDirection: 'row',
-        justifyContent: 'center',
+    showAllButton: {
+        padding: 10,
         alignItems: 'center',
-        padding: 15,
-        borderRadius: 8,
-        marginHorizontal: 20,
-        marginVertical: 20,
+        marginTop: 10,
     },
-    logoutButtonText: {
-        color: '#fff',
+    showAllText: {
+        color: '#007AFF',
         fontSize: 16,
         fontWeight: '600',
-        marginLeft: 8,
+    },
+    spacer: {
+        flex: 1,
     },
 });
 

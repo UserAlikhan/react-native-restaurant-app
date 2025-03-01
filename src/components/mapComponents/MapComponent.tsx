@@ -1,16 +1,18 @@
-import { useRef, useState } from "react";
+import { useCallback, useRef } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import MapView, { PROVIDER_GOOGLE, PROVIDER_DEFAULT, Region } from "react-native-maps";
+import MapView, { PROVIDER_DEFAULT, Region } from "react-native-maps";
 import { BottomSheetModal } from "@gorhom/bottom-sheet";
 import MarkerComponent from "@app/components/mapComponents/MarkerComponent";
 import constants from "@app/constants/constants";
 import BottomSheetModalComponent from "../bottomSheet/BottomSheetModalComponent";
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
+import { useAppDispatch } from "@app/store/hooks";
 import { setSelectedBar } from "@app/store/slices/selectedBarSlice";
 import { BarResponse } from "@app/types/apiResponseTypes";
 import * as Location from "expo-location";
 import MapPageSearchComponent from "../searchField/MapPageSearchComponent";
 import { useGetFromStoreOrRetrieveAllBarsHook } from "@app/customHooks/useGetFromStoreOrRetrieveAllBarsHook";
+import { useGetLocationHook } from "@app/customHooks/useGetLocationHook";
+import { setLocation } from "@app/store/slices/locationSlice";
 
 const MapComponent = () => {
 
@@ -18,22 +20,22 @@ const MapComponent = () => {
     const mapRef = useRef<MapView | null>(null);
 
     const { bars } = useGetFromStoreOrRetrieveAllBarsHook();
-    const { selectedBar } = useAppSelector((state) => state.selectedBar);
-
+    const { location } = useGetLocationHook()
     const dispatch = useAppDispatch();
-
-    const [location, setLocation] = useState<Location.LocationObject | null>(
-        null
-    );
 
     const onRegionChange = (region: Region) => {
         console.log(region);
     };
 
-    const onCalloutPressed = (bar: BarResponse) => {
+    const onCalloutPressed = useCallback((bar: BarResponse) => {
         dispatch(setSelectedBar(bar));
-        bottomSheetRef.current?.present();
-    };
+        // Add a small delay to ensure the bottomSheet is ready
+        setTimeout(() => {
+            if (bottomSheetRef.current) {
+                bottomSheetRef.current.present();
+            }
+        }, 100);
+    }, [dispatch]);
 
     const checkStatus = async () => {
         let { status } = await Location.requestForegroundPermissionsAsync();
@@ -50,22 +52,21 @@ const MapComponent = () => {
 
         if (!location) {
             let currentLocation = await Location.getCurrentPositionAsync({});
-            setLocation(currentLocation);
+            dispatch(setLocation(currentLocation));
         }
-
-        if (location) {
+        if (!location) return;
+        // Wait for the location to be set
+        setTimeout(() => {
             mapRef.current?.getCamera().then((camera) => {
                 mapRef.current?.animateCamera({
                     center: {
-                        latitude: constants.INITIAL_REGION.latitude,
-                        longitude: constants.INITIAL_REGION.longitude,
-                        // latitude: location?.coords.latitude,
-                        // longitude: location?.coords.longitude,
+                        latitude: location.coords.latitude,
+                        longitude: location.coords.longitude,
                     },
                     zoom: 15,
                 });
             });
-        }
+        }, 100);
     };
 
     return (
@@ -98,9 +99,7 @@ const MapComponent = () => {
             >
                 <Text style={styles.locationButtonText}>📍</Text>
             </TouchableOpacity>
-            {selectedBar !== null && (
-                <BottomSheetModalComponent ref={bottomSheetRef} />
-            )}
+            <BottomSheetModalComponent ref={bottomSheetRef} />
         </View>
     );
 };

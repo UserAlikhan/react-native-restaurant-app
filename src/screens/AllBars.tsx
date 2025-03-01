@@ -1,20 +1,13 @@
 import ArrowHeaderTemplate from "@app/components/templates/ArrowHeaderTemplate"
 import { ScrollView, StyleSheet, Text, View } from "react-native"
-import AllBarsCard from "@app/components/ui/allbarsCard"
+import AllBarsCard from "@app/components/ui/AllbarsCard"
 import { useGetFromStoreOrRetrieveAllBarsHook } from "@app/customHooks/useGetFromStoreOrRetrieveAllBarsHook";
-import { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@app/store/hooks";
-import checkJwtTokenAndRetrieveFavorites from "@app/helper/checkJwtTokenAndRetrieveFavorites";
+import useGetFavoriteBarsFromStoreOrRetrieveHook from "@app/customHooks/useGetFavoriteBarsFromStoreOrRetrieveHook";
 
 const AllBars = () => {
 
-    const dispatch = useAppDispatch()
     const { bars } = useGetFromStoreOrRetrieveAllBarsHook();
-    const { favoritesIds } = useAppSelector(state => state.favorites)
-
-    useEffect(() => {
-        checkJwtTokenAndRetrieveFavorites(dispatch, favoritesIds)
-    }, [])
+    useGetFavoriteBarsFromStoreOrRetrieveHook()
 
     return (
         <ArrowHeaderTemplate>

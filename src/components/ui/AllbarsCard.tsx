@@ -18,6 +18,7 @@ type Props = {
 
 const AllBarsCard = ({ bar }: Props) => {
     const dispatch = useAppDispatch()
+
     const { favoritesIds } = useAppSelector(state => state.favorites)
 
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
@@ -28,23 +29,18 @@ const AllBarsCard = ({ bar }: Props) => {
         if (jwtToken && isTokenValid(jwtToken)) {
             const decodedToken = jwtDecode(jwtToken)
 
-            try {
-                if (!favoritesIds.includes(bar_id)) {
-                    dispatch(addFavoriteBar(bar))
-                    await addToFavorites(Number(decodedToken.sub), bar_id, jwtToken)
-                } else {
-                    dispatch(removeFavoriteBar(bar_id))
-                    await removeFromFavorites(Number(decodedToken.sub), bar_id, jwtToken)
-                }
-            } catch (error) {
-                console.error('Error updating favorites:', error)
+            if (!favoritesIds.includes(bar_id)) {
+                console.log('Adding to favorites')
+                dispatch(addFavoriteBar(bar))
+                await addToFavorites(Number(decodedToken.sub), bar_id, jwtToken)
+            } else {
+                dispatch(removeFavoriteBar(bar_id))
+                await removeFromFavorites(Number(decodedToken.sub), bar_id, jwtToken)
             }
         } else if (!jwtToken) {
             signUpFirstAlert({ handleSignUpPage: () => { navigation.replace('BottomNavigation', { screen: 'SignUp' } as never) } })
         }
     }
-
-    console.log('Current favoritesIds:', favoritesIds)
 
     return (
         <View style={styles.container}>

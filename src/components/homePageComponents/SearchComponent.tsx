@@ -30,7 +30,7 @@ const SearchComponent = () => {
     const navigation =
         useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
-    const debouncedFilterOptions = useCallback(
+    const handleFilterOptions = useCallback(
         debounce((query) => {
             if (!query) {
                 setAllOptions([]); // Clear options when query is empty
@@ -49,10 +49,6 @@ const SearchComponent = () => {
         }, 300),
         [bars]
     );
-
-    const handleFilterOptions = (query: string) => {
-        debouncedFilterOptions(query);
-    };
 
     const handleRedirectToBar = (bar: BarResponse) => {
         // add selected bar to the local state

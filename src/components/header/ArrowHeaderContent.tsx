@@ -4,12 +4,20 @@ import { useNavigation } from '@react-navigation/native'
 import { MainStackParamList } from "../../types/navigation"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { ArrowLeft } from "lucide-react-native"
+import { useAppDispatch } from "@app/store/hooks"
+import { resetSelectedBar } from "@app/store/slices/selectedBarSlice"
 
 const ArrowHeaderContent = () => {
+    const dispatch = useAppDispatch()
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
+    const handleBack = () => {
+        navigation.navigate("BottomNavigation")
+        dispatch(resetSelectedBar())
+    }
+
     return (
-        <TouchableOpacity style={styles.container} onPress={() => navigation.navigate("BottomNavigation")}>
+        <TouchableOpacity style={styles.container} onPress={handleBack}>
             <View style={styles.main}>
                 <View style={styles.content}>
                     <ArrowLeft size={45} color="black" />
