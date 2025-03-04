@@ -7,14 +7,21 @@ import RedirectToBarComponent from "./RedirectToBarComponent"
 import HorizontalImageScroll from "../horizontallImageScroll/HorizontalImageScroll"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
 import { MainStackParamList } from "@app/types/navigation"
-import { useAppSelector } from "@app/store/hooks"
+import { useAppDispatch, useAppSelector } from "@app/store/hooks"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import isTokenValid from "@app/helper/isTokenValid"
+import { jwtDecode } from "jwt-decode"
+import { addFavoriteBar, removeFavoriteBar } from "@app/store/slices/favoritesSlice"
+import { addToFavorites } from "@app/apiRequests/favoritesCalls"
+import signUpFirstAlert from "../alerts/signUpFirstAlert"
+import barAlreadyInFavoritesAlert from "../alerts/barAlreadyInFavoritesAlert"
 
 export type Ref = BottomSheetModal
 
 const BottomSheetModalComponent = forwardRef<Ref>((props, ref) => {
 
     const [iconColor, setIconColor] = useState<string>("grey");
-
+    const dispatch = useAppDispatch()
     const snapPoints = useMemo(() => ['25%', '50%', '75%'], []);
     const { dismiss } = useBottomSheetModal();
 
@@ -22,22 +29,36 @@ const BottomSheetModalComponent = forwardRef<Ref>((props, ref) => {
     const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
 
     const { selectedBar } = useAppSelector(state => state.selectedBar);
-
-    if (!selectedBar) {
-        return (
-            <View>
-                <Text>No data</Text>
-            </View>
-        )
-    }
+    const { favoritesIds } = useAppSelector(state => state.favorites)
+    if (!selectedBar) return;
 
     const handleAddToFavorites = async () => {
-        // await addToFavorites(selectedBar.id);
+        const jwtToken = await AsyncStorage.getItem('jwtToken')
+        if (jwtToken && isTokenValid(jwtToken)) {
+            const decodedToken = jwtDecode(jwtToken)
+            if (!favoritesIds.includes(selectedBar.id)) {
+                dispatch(addFavoriteBar(selectedBar))
+                try {
+                    await addToFavorites(Number(decodedToken.sub), selectedBar.id, jwtToken)
+                } catch (error) {
+                    console.error(error)
+                }
+            } else {
+                barAlreadyInFavoritesAlert()
+            }
+        } else {
+            signUpFirstAlert({ handleSignUpPage: () => { navigation.replace('BottomNavigation', { screen: 'SignUp' } as never) } })
+        }
     }
 
     const handleClickDetails = () => {
         navigation.navigate('Bar');
         dismiss();
+    }
+
+    const handleCloseBottomSheet = () => {
+        dismiss();
+        dispatch(removeFavoriteBar(selectedBar.id))
     }
 
     return (
@@ -50,7 +71,7 @@ const BottomSheetModalComponent = forwardRef<Ref>((props, ref) => {
                 color={iconColor} size={36}
                 style={{ position: "absolute", top: 0, right: 15 }}
                 onPress={() => {
-                    dismiss()
+                    handleCloseBottomSheet()
                 }}
                 onPressIn={() => setIconColor("red")}
                 onPressOut={() => setIconColor("grey")}
